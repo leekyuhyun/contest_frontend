@@ -6,10 +6,10 @@
           <i class="fas fa-bell me-3"></i>
           상황 알림 대시보드
         </h2>
-        <div class="alert-summary">
-          <span class="badge bg-danger me-2">긴급: {{ criticalAlerts.length }}</span>
-          <span class="badge bg-warning me-2">주의: {{ warningAlerts.length }}</span>
-        </div>
+        <AlertSummaryBadges
+          :critical-count="criticalAlerts.length"
+          :warning-count="warningAlerts.length"
+        />
       </div>
     </div>
 
@@ -40,55 +40,14 @@
         </div>
 
         <div v-else class="alerts-list">
-          <div
+          <AlertCard
             v-for="alert in sortedAlerts"
             :key="alert.id"
-            :class="['alert-card', `alert-${alert.severity}`]"
-          >
-            <div class="alert-header">
-              <div class="alert-info">
-                <i :class="getAlertIcon(alert.severity)" class="alert-icon"></i>
-                <div class="alert-details">
-                  <h5 class="alert-title">{{ alert.title }}</h5>
-                  <p class="alert-description">{{ alert.description }}</p>
-                </div>
-              </div>
-              <div class="alert-actions">
-                <span class="alert-time">{{ formatTime(alert.timestamp) }}</span>
-                <div class="action-buttons">
-                  <button
-                    v-if="alert.severity === 'critical'"
-                    class="btn btn-danger btn-sm me-2"
-                    @click="goToEmergencyDashboard(alert.macAddress)"
-                  >
-                    <i class="fas fa-external-link-alt me-1"></i>
-                    응급 대응
-                  </button>
-                  <button
-                    class="btn btn-outline-success btn-sm me-2"
-                    @click="acknowledgeAlert(alert.id)"
-                    :disabled="alert.acknowledged"
-                  >
-                    <i class="fas fa-check me-1"></i>
-                    {{ alert.acknowledged ? '확인됨' : '확인' }}
-                  </button>
-                  <button class="btn btn-outline-secondary btn-sm" @click="dismissAlert(alert.id)">
-                    <i class="fas fa-times me-1"></i>
-                    해제
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div v-if="alert.deviceInfo" class="alert-device-info">
-              <div class="device-details">
-                <span><strong>기기:</strong> {{ alert.deviceInfo.name }}</span>
-                <span><strong>보호자:</strong> {{ alert.deviceInfo.guardian_name }}</span>
-                <span><strong>연락처:</strong> {{ alert.deviceInfo.guardian_phone }}</span>
-                <span v-if="alert.location"><strong>위치:</strong> {{ alert.location }}</span>
-              </div>
-            </div>
-          </div>
+            :alert="alert"
+            @acknowledge="acknowledgeAlert"
+            @dismiss="dismissAlert"
+            @emergency-response="goToEmergencyDashboard"
+          />
         </div>
       </div>
 
@@ -101,47 +60,7 @@
           </h4>
         </div>
 
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-icon bg-danger">
-              <i class="fas fa-exclamation-triangle"></i>
-            </div>
-            <div class="stat-info">
-              <h3>{{ todayStats.critical }}</h3>
-              <p>긴급 상황</p>
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-icon bg-warning">
-              <i class="fas fa-exclamation-circle"></i>
-            </div>
-            <div class="stat-info">
-              <h3>{{ todayStats.warning }}</h3>
-              <p>주의 알림</p>
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-icon bg-success">
-              <i class="fas fa-check-circle"></i>
-            </div>
-            <div class="stat-info">
-              <h3>{{ todayStats.resolved }}</h3>
-              <p>해결된 상황</p>
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-icon bg-info">
-              <i class="fas fa-clock"></i>
-            </div>
-            <div class="stat-info">
-              <h3>{{ todayStats.avgResponseTime }}분</h3>
-              <p>평균 대응 시간</p>
-            </div>
-          </div>
-        </div>
+        <StatisticsGrid :stats="todayStats" />
       </div>
     </div>
   </div>
@@ -150,9 +69,17 @@
 <script>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import AlertSummaryBadges from '@/components/alert/AlertSummaryBadges.vue'
+import AlertCard from '@/components/alert/AlertCard.vue'
+import StatisticsGrid from '@/components/alert/StatisticsGrid.vue'
 
 export default {
   name: 'SituationAlertDashboard',
+  components: {
+    AlertSummaryBadges,
+    AlertCard,
+    StatisticsGrid,
+  },
   setup() {
     const router = useRouter()
     const loading = ref(false)
@@ -229,7 +156,6 @@ export default {
       avgResponseTime: 3.2,
     })
 
-    // 계산된 속성들
     const criticalAlerts = computed(() =>
       alerts.value.filter(alert => alert.severity === 'critical')
     )
@@ -246,11 +172,9 @@ export default {
       })
     })
 
-    // 메서드들
     const loadAlerts = async () => {
       loading.value = true
       try {
-        // 실제로는 API 호출
         await new Promise(resolve => setTimeout(resolve, 1000))
         alerts.value = sampleAlerts
       } catch (error) {
@@ -262,29 +186,6 @@ export default {
 
     const refreshAlerts = () => {
       loadAlerts()
-    }
-
-    const getAlertIcon = severity => {
-      const icons = {
-        critical: 'fas fa-exclamation-triangle text-danger',
-        warning: 'fas fa-exclamation-circle text-warning',
-      }
-      return icons[severity] || 'fas fa-bell'
-    }
-
-    const formatTime = timestamp => {
-      const now = new Date()
-      const diff = now - new Date(timestamp)
-      const minutes = Math.floor(diff / 60000)
-
-      if (minutes < 1) return '방금 전'
-      if (minutes < 60) return `${minutes}분 전`
-
-      const hours = Math.floor(minutes / 60)
-      if (hours < 24) return `${hours}시간 전`
-
-      const days = Math.floor(hours / 24)
-      return `${days}일 전`
     }
 
     const acknowledgeAlert = alertId => {
@@ -305,10 +206,8 @@ export default {
       })
     }
 
-    // 라이프사이클
     onMounted(() => {
       loadAlerts()
-      // 30초마다 자동 새로고침
       refreshInterval.value = setInterval(refreshAlerts, 30000)
     })
 
@@ -326,8 +225,6 @@ export default {
       sortedAlerts,
       todayStats,
       refreshAlerts,
-      getAlertIcon,
-      formatTime,
       acknowledgeAlert,
       dismissAlert,
       goToEmergencyDashboard,
@@ -361,11 +258,6 @@ export default {
   color: #2c3e50;
   font-weight: 700;
   margin: 0;
-}
-
-.alert-summary .badge {
-  font-size: 0.9rem;
-  padding: 8px 12px;
 }
 
 .dashboard-content {
@@ -414,142 +306,6 @@ export default {
   gap: 20px;
 }
 
-.alert-card {
-  border-radius: 12px;
-  padding: 20px;
-  border-left: 5px solid;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.alert-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-.alert-critical {
-  background: #fff5f5;
-  border-left-color: #dc3545;
-}
-
-.alert-warning {
-  background: #fffbf0;
-  border-left-color: #ffc107;
-}
-
-.alert-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 15px;
-}
-
-.alert-info {
-  display: flex;
-  align-items: flex-start;
-  gap: 15px;
-}
-
-.alert-icon {
-  font-size: 1.5rem;
-  margin-top: 5px;
-}
-
-.alert-details h5 {
-  margin: 0 0 8px 0;
-  font-weight: 600;
-  color: #2c3e50;
-}
-
-.alert-details p {
-  margin: 0;
-  color: #6c757d;
-  line-height: 1.5;
-}
-
-.alert-actions {
-  text-align: right;
-}
-
-.alert-time {
-  display: block;
-  font-size: 0.875rem;
-  color: #6c757d;
-  margin-bottom: 10px;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.alert-device-info {
-  background: rgba(255, 255, 255, 0.7);
-  border-radius: 8px;
-  padding: 15px;
-  margin-top: 15px;
-}
-
-.device-details {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px;
-  font-size: 0.9rem;
-}
-
-.device-details span {
-  color: #495057;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-}
-
-.stat-card {
-  background: white;
-  border-radius: 12px;
-  padding: 25px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
-}
-
-.stat-card:hover {
-  transform: translateY(-3px);
-}
-
-.stat-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.5rem;
-}
-
-.stat-info h3 {
-  margin: 0 0 5px 0;
-  font-size: 2rem;
-  font-weight: 700;
-  color: #2c3e50;
-}
-
-.stat-info p {
-  margin: 0;
-  color: #6c757d;
-  font-weight: 500;
-}
-
 @media (max-width: 1200px) {
   .dashboard-content {
     grid-template-columns: 1fr;
@@ -561,28 +317,6 @@ export default {
     flex-direction: column;
     gap: 20px;
     align-items: flex-start;
-  }
-
-  .alert-header {
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  .alert-actions {
-    text-align: left;
-    width: 100%;
-  }
-
-  .action-buttons {
-    justify-content: flex-start;
-  }
-
-  .device-details {
-    grid-template-columns: 1fr;
-  }
-
-  .stats-grid {
-    grid-template-columns: 1fr;
   }
 }
 </style>
