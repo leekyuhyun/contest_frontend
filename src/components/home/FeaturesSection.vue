@@ -1,0 +1,153 @@
+<template>
+  <section class="features-section py-5">
+    <div class="container">
+      <div class="row justify-content-center mb-5">
+        <div class="col-lg-8 text-center">
+          <h2 class="section-title">핵심 기능</h2>
+          <p class="section-subtitle">첨단 기술로 구현하는 스마트 안전 솔루션</p>
+        </div>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-4" v-for="(feature, index) in features" :key="index">
+          <div class="feature-card h-100" :class="`feature-${index + 1}`">
+            <div class="feature-icon">
+              <i :class="feature.icon"></i>
+            </div>
+            <div class="feature-content">
+              <h5 class="feature-title">{{ feature.title }}</h5>
+              <p class="feature-description">{{ feature.description }}</p>
+              <ul class="feature-list">
+                <li v-for="item in feature.items" :key="item">{{ item }}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</template>
+
+<script>
+export default {
+  name: 'FeaturesSection',
+  data() {
+    return {
+      features: [
+        {
+          icon: 'fas fa-video text-success',
+          title: '실시간 모니터링',
+          description: '24시간 끊임없는 감시로 위험 상황을 즉시 포착합니다.',
+          items: ['CCTV 연동', '실시간 영상 분석', '이상 징후 감지'],
+        },
+        {
+          icon: 'fas fa-brain text-info',
+          title: 'AI 기반 분석',
+          description: '인공지능이 복잡한 상황을 정확하게 판단합니다.',
+          items: ['딥러닝 알고리즘', '패턴 인식', '위험도 평가'],
+        },
+        {
+          icon: 'fas fa-bolt text-danger',
+          title: '신속한 대응',
+          description: '위험 감지 시 관계 기관에 즉시 알림을 전송합니다.',
+          items: ['자동 신고', '보호자 알림', '초동 대응 지원'],
+        },
+      ],
+    }
+  },
+}
+</script>
+
+<style scoped>
+.features-section {
+  background: white;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.section-subtitle {
+  font-size: 1.1rem;
+  color: #6c757d;
+  margin-bottom: 0;
+}
+
+.feature-card {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: 1px solid #f8f9fa;
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.feature-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+}
+
+.feature-1 .feature-icon {
+  background: rgba(40, 167, 69, 0.1);
+}
+.feature-2 .feature-icon {
+  background: rgba(23, 162, 184, 0.1);
+}
+.feature-3 .feature-icon {
+  background: rgba(220, 53, 69, 0.1);
+}
+
+.feature-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.feature-description {
+  color: #6c757d;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.feature-list li {
+  padding: 0.5rem 0;
+  color: #495057;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.feature-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #28a745;
+  font-weight: bold;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 2rem;
+  }
+}
+</style>
