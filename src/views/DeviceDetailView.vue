@@ -17,122 +17,24 @@
               <div v-else-if="device">
                 <form @submit.prevent="updateDevice">
                   <!-- 기기 정보 -->
-                  <div class="info-section">
-                    <h5 class="section-title">기기 정보</h5>
-                    <div class="row">
-                      <div class="col-md-6 mb-3">
-                        <label for="deviceId" class="form-label">기기 ID</label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="deviceId"
-                          v-model="device.id"
-                          disabled
-                        />
-                        <div class="form-text text-muted">기기 ID는 수정할 수 없습니다.</div>
-                      </div>
-                      <div class="col-md-6 mb-3">
-                        <label for="macAddress" class="form-label">맥주소 (MAC Address)</label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="macAddress"
-                          v-model="device.mac_address"
-                          disabled
-                        />
-                        <div class="form-text text-muted">맥주소는 수정할 수 없습니다.</div>
-                      </div>
-                    </div>
-                    <div class="mb-3">
-                      <label for="deviceName" class="form-label">기기 이름</label>
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="deviceName"
-                        v-model="device.name"
-                        required
-                        placeholder="예: 왕곽봉님 기기"
-                      />
-                    </div>
-                  </div>
+                  <DeviceInfoSection :device="device" @update:name="device.name = $event" />
 
                   <!-- 사용자 정보 (백엔드에 'user_name' 필드가 없으므로 제거) -->
-                  <div class="info-section">
-                    <h5 class="section-title">사용자 정보</h5>
-                    <div class="row">
-                      <div class="col-md-4 mb-3">
-                        <label for="gender" class="form-label">성별</label>
-                        <select class="form-select" id="gender" v-model="device.gender" required>
-                          <option value="">선택</option>
-                          <option value="M">남성</option>
-                          <option value="F">여성</option>
-                        </select>
-                      </div>
-                      <div class="col-md-4 mb-3">
-                        <label for="birthDate" class="form-label">생년월일</label>
-                        <input
-                          type="date"
-                          class="form-control"
-                          id="birthDate"
-                          v-model="device.birth_date"
-                          required
-                        />
-                        <div class="form-text text-muted">YYYY-MM-DD 형식으로 입력</div>
-                      </div>
-                      <div class="col-md-4 mb-3">
-                        <label for="phone" class="form-label">연락처</label>
-                        <input
-                          type="tel"
-                          class="form-control"
-                          id="phone"
-                          v-model="device.phone"
-                          required
-                          placeholder="예: 010-1234-5678"
-                        />
-                      </div>
-                    </div>
-                  </div>
+                  <UserInfoSection
+                    :device="device"
+                    @update:gender="device.gender = $event"
+                    @update:birthDate="device.birth_date = $event"
+                    @update:phone="device.phone = $event"
+                  />
 
                   <!-- 보호자 정보 -->
-                  <div class="info-section">
-                    <h5 class="section-title">보호자 정보</h5>
-                    <div class="row">
-                      <div class="col-md-4 mb-3">
-                        <label for="guardianName" class="form-label">보호자 이름</label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="guardianName"
-                          v-model="device.guardian_name"
-                          required
-                        />
-                      </div>
-                      <div class="col-md-4 mb-3">
-                        <label for="guardianRelation" class="form-label">보호자 관계</label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="guardianRelation"
-                          v-model="device.guardian_relation"
-                          required
-                          placeholder="예: 부, 모, 자녀"
-                        />
-                      </div>
-                      <div class="col-md-4 mb-3">
-                        <label for="guardianPhone" class="form-label">보호자 연락처</label>
-                        <input
-                          type="tel"
-                          class="form-control"
-                          id="guardianPhone"
-                          v-model="device.guardian_phone"
-                          required
-                          placeholder="예: 010-9876-5432"
-                        />
-                      </div>
-                    </div>
-                  </div>
+                  <GuardianInfoSection
+                    :device="device"
+                    @update:guardianName="device.guardian_name = $event"
+                    @update:guardianRelation="device.guardian_relation = $event"
+                    @update:guardianPhone="device.guardian_phone = $event"
+                  />
 
-                  <!-- 버튼 스타일 개선 -->
                   <div class="text-center mt-4">
                     <button
                       type="submit"
@@ -153,16 +55,7 @@
               </div>
 
               <!-- 메시지 스타일을 그라데이션 배경으로 변경 -->
-              <div v-if="message" class="message-container mt-4">
-                <div
-                  :class="[
-                    'message-modern',
-                    messageType === 'success' ? 'message-success' : 'message-error',
-                  ]"
-                >
-                  {{ message }}
-                </div>
-              </div>
+              <MessageAlert :message="message" :messageType="messageType" />
             </div>
           </div>
         </div>
@@ -173,9 +66,19 @@
 
 <script>
 import { deviceService } from '@/services/deviceService'
+import DeviceInfoSection from '@/components/device/detail/DeviceInfoSection.vue'
+import UserInfoSection from '@/components/device/detail/UserInfoSection.vue'
+import GuardianInfoSection from '@/components/device/detail/GuardianInfoSection.vue'
+import MessageAlert from '@/components/device/detail/MessageAlert.vue'
 
 export default {
   name: 'DeviceDetailView',
+  components: {
+    DeviceInfoSection,
+    UserInfoSection,
+    GuardianInfoSection,
+    MessageAlert,
+  },
   props: ['deviceId'],
   data() {
     return {
@@ -200,7 +103,7 @@ export default {
           mac_address: fetchedDevice.mac_address,
           name: fetchedDevice.name,
           gender: fetchedDevice.gender,
-          birth_date: fetchedDevice.birth_date, // YYYY-MM-DD 문자열
+          birth_date: fetchedDevice.birth_date,
           phone: fetchedDevice.phone,
           guardian_name: fetchedDevice.guardian_name,
           guardian_relation: fetchedDevice.guardian_relation,
@@ -276,7 +179,6 @@ export default {
 </script>
 
 <style scoped>
-/* DeviceRegistration과 동일한 스타일 적용 */
 .page-background {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -293,41 +195,6 @@ export default {
 
 .card-body-modern {
   padding: 3rem;
-}
-
-.info-section {
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: #f8f9fa;
-  border-radius: 15px;
-  border-left: 4px solid #667eea;
-}
-
-.section-title {
-  color: #495057;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid #e9ecef;
-}
-
-.form-control,
-.form-select {
-  border-radius: 10px;
-  border: 2px solid #e9ecef;
-  padding: 0.75rem 1rem;
-  transition: all 0.3s ease;
-}
-
-.form-control:focus,
-.form-select:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-}
-
-.form-control:disabled {
-  background-color: #f8f9fa;
-  border-color: #dee2e6;
 }
 
 .btn-modern {
@@ -353,29 +220,6 @@ export default {
   cursor: not-allowed;
 }
 
-.message-container {
-  display: flex;
-  justify-content: center;
-}
-
-.message-modern {
-  padding: 1rem 2rem;
-  border-radius: 15px;
-  color: white;
-  font-weight: 500;
-  text-align: center;
-  max-width: 600px;
-  animation: slideInUp 0.3s ease-out;
-}
-
-.message-success {
-  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-}
-
-.message-error {
-  background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
-}
-
 .spinner-border {
   color: #667eea !important;
 }
@@ -394,10 +238,6 @@ export default {
 @media (max-width: 768px) {
   .card-body-modern {
     padding: 2rem 1.5rem;
-  }
-
-  .info-section {
-    padding: 1rem;
   }
 }
 </style>

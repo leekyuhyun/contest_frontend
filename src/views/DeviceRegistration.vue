@@ -74,13 +74,13 @@
 </template>
 
 <script>
-import HeroSection from '@/components/registration/HeroSection.vue'
-import ProgressSection from '@/components/registration/ProgressSection.vue'
-import DeviceInfoSection from '@/components/registration/DeviceInfoSection.vue'
-import UserInfoSection from '@/components/registration/UserInfoSection.vue'
-import GuardianInfoSection from '@/components/registration/GuardianInfoSection.vue'
-import FormActionsSection from '@/components/registration/FormActionsSection.vue'
-import HelpSection from '@/components/registration/HelpSection.vue'
+import HeroSection from '@/components/device/registration/HeroSection.vue'
+import ProgressSection from '@/components/device/registration/ProgressSection.vue'
+import DeviceInfoSection from '@/components/device/registration/DeviceInfoSection.vue'
+import UserInfoSection from '@/components/device/registration/UserInfoSection.vue'
+import GuardianInfoSection from '@/components/device/registration/GuardianInfoSection.vue'
+import FormActionsSection from '@/components/device/registration/FormActionsSection.vue'
+import HelpSection from '@/components/device/registration/HelpSection.vue'
 import { deviceService } from '@/services/deviceService'
 
 export default {
