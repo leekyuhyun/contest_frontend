@@ -1,77 +1,159 @@
-/* 기본적인 CSS Reset (Bootstrap이 일부 포함하지만, 명시적으로 추가) */
+/* Simplified and fixed CSS conflicts */
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #4b5563;
+  --card: #f9fafb;
+  --card-foreground: #374151;
+  --popover: #ffffff;
+  --popover-foreground: #4b5563;
+  --primary: #0891b2;
+  --primary-foreground: #ffffff;
+  --secondary: #6366f1;
+  --secondary-foreground: #ffffff;
+  --muted: #f9fafb;
+  --muted-foreground: #4b5563;
+  --accent: #6366f1;
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #e5e7eb;
+  --input: #f9fafb;
+  --ring: rgba(0, 0, 0, 0.1);
+  --chart-1: #3b82f6;
+  --chart-2: #10b981;
+  --chart-3: #fbbf24;
+  --chart-4: #f43f5e;
+  --chart-5: #6366f1;
+  --radius: 0.5rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #4b5563;
+  --sidebar-primary: #f9fafb;
+  --sidebar-primary-foreground: #4b5563;
+  --sidebar-accent: #6366f1;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #e5e7eb;
+  --sidebar-ring: rgba(0, 0, 0, 0.1);
+}
+
 body {
   margin: 0;
   padding: 0;
-  font-family:
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; /* Bootstrap 기본 폰트와 유사하게 설정 */
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   line-height: 1.6;
-  color: #333;
-  background-color: #f8f9fa; /* Bootstrap 기본 배경색 */
+  color: var(--foreground);
+  background-color: var(--background);
 }
 
+/* Monitoring page layout - simplified and fixed */
 .monitoring-page {
   width: 100%;
-  height: calc(100vh - 56px); /* 헤더 높이(56px)를 제외한 전체 높이 */
+  height: calc(100vh - 56px);
   display: flex;
   position: relative;
-  overflow: hidden; /* 전환 중 스크롤바 방지 */
+  overflow: hidden;
 }
 
+/* Fixed sidebar positioning and transitions */
 .sidebar-controls {
-  width: 250px; /* 기본 너비 */
-  flex-shrink: 0; /* 줄어들지 않음 */
-  transform: translateX(0); /* 기본: 보임 */
-  transition: transform 0.3s ease-in-out; /* transform 애니메이션 */
-  border-right: 1px solid #dee2e6;
-  box-sizing: border-box; /* 패딩과 테두리를 너비에 포함 */
-  z-index: 1000; /* 지도 위에 표시 */
+  width: 250px;
+  flex-shrink: 0;
+  transition: transform 0.3s ease-in-out;
+  border-right: 1px solid var(--border);
+  background: var(--sidebar);
+  z-index: 100;
 }
 
 .sidebar-controls.sidebar-hidden {
-  transform: translateX(-100%); /* 왼쪽으로 이동하여 숨김 */
-  border-right: none; /* 숨겨질 때 테두리 제거 */
+  transform: translateX(-100%);
 }
 
 .main-content-area {
-  flex-grow: 1; /* 남은 공간을 모두 채움 */
+  flex: 1;
   position: relative;
   display: flex;
-  margin-left: 0; /* 기본: 필터 사이드바가 열려있을 때 */
-  transition: margin-left 0.3s ease-in-out; /* margin-left 애니메이션 */
+  min-width: 0; /* Prevents flex item from overflowing */
 }
 
-/* 필터 사이드바가 닫혔을 때 main-content-area를 왼쪽으로 이동 */
-.monitoring-page.filter-sidebar-closed .main-content-area {
-  margin-left: -250px; /* 필터 사이드바 너비만큼 왼쪽으로 이동 */
-}
-
+/* Simplified toggle button positioning */
 .toggle-filter-btn {
   position: absolute;
   top: 10px;
-  left: 10px; /* 필터 사이드바가 닫혔을 때 기본 위치 */
-  z-index: 1001; /* 다른 요소 위에 표시 */
+  left: 10px;
+  z-index: 200;
   width: 36px;
   height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 4px var(--ring);
   cursor: pointer;
-  transition: left 0.3s ease-in-out; /* 위치 변화 애니메이션 */
+  transition: left 0.3s ease-in-out;
 }
 
 .toggle-filter-btn.shifted {
-  left: 260px; /* 필터 사이드바가 열려있을 때 위치 (필터 너비 250px + 여백 10px) */
+  left: 260px;
 }
 
 .toggle-filter-btn .icon {
   width: 20px;
   height: 20px;
-  color: #007bff; /* Bootstrap primary color */
+  color: var(--primary);
 }
 
-/* KakaoMap.vue의 #map 스타일은 KakaoMap.vue 파일 내에 정의되어 있습니다. */
-/* Monitoring 페이지의 KakaoMap이 전체 공간을 채우도록 */
+/* Map container */
 #map {
   width: 100%;
   height: 100%;
+}
+
+/* Fixed CCTV sidebar positioning */
+.cctv-sidebar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 350px;
+  background: var(--sidebar);
+  border-left: 1px solid var(--border);
+  box-shadow: -2px 0 8px var(--ring);
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+  z-index: 150;
+  display: flex;
+  flex-direction: column;
+}
+
+.cctv-sidebar.is-open {
+  transform: translateX(0);
+}
+
+/* Container utilities */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sidebar-controls {
+    width: 280px;
+  }
+
+  .toggle-filter-btn.shifted {
+    left: 290px;
+  }
+
+  .cctv-sidebar {
+    width: 100%;
+    max-width: 350px;
+  }
 }
