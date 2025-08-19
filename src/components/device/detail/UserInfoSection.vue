@@ -1,8 +1,22 @@
 <template>
   <div class="info-section">
     <h5 class="section-title">사용자 정보</h5>
-    <div class="row">
-      <div class="col-md-4 mb-3">
+    <!-- Changed from Bootstrap rows/cols to CSS Grid 2x2 layout -->
+    <div class="grid-2x2">
+      <div class="form-group">
+        <label for="userName" class="form-label">사용자 이름</label>
+        <!-- Made user name field read-only like MAC address and device ID -->
+        <input
+          type="text"
+          class="form-control readonly-field"
+          id="userName"
+          :value="device.name"
+          readonly
+          placeholder="예: 홍길동"
+        />
+        <div class="form-text text-muted">* 이름은 수정할 수 없습니다.</div>
+      </div>
+      <div class="form-group">
         <label for="gender" class="form-label">성별</label>
         <select
           class="form-select"
@@ -16,7 +30,7 @@
           <option value="F">여성</option>
         </select>
       </div>
-      <div class="col-md-4 mb-3">
+      <div class="form-group">
         <label for="birthDate" class="form-label">생년월일</label>
         <input
           type="date"
@@ -26,9 +40,9 @@
           @input="$emit('update:birthDate', $event.target.value)"
           required
         />
-        <div class="form-text text-muted">YYYY-MM-DD 형식으로 입력</div>
+        <div class="form-text text-muted">* YYYY-MM-DD 형식으로 입력</div>
       </div>
-      <div class="col-md-4 mb-3">
+      <div class="form-group">
         <label for="phone" class="form-label">연락처</label>
         <input
           type="tel"
@@ -86,5 +100,38 @@ export default {
 .form-select:focus {
   border-color: #667eea;
   box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Added CSS Grid 2x2 layout styles */
+.grid-2x2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Added responsive behavior for mobile */
+@media (max-width: 768px) {
+  .grid-2x2 {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, 1fr);
+  }
+}
+
+/* Added styling for read-only fields */
+.readonly-field {
+  background-color: #f8f9fa !important;
+  color: #6c757d;
+  cursor: not-allowed;
+}
+
+.readonly-field:focus {
+  border-color: #e9ecef !important;
+  box-shadow: none !important;
 }
 </style>

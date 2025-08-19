@@ -98,17 +98,7 @@ export default {
       this.message = ''
       try {
         const fetchedDevice = await deviceService.getDevice(this.deviceId)
-        this.device = {
-          id: fetchedDevice.id,
-          mac_address: fetchedDevice.mac_address,
-          name: fetchedDevice.name,
-          gender: fetchedDevice.gender,
-          birth_date: fetchedDevice.birth_date,
-          phone: fetchedDevice.phone,
-          guardian_name: fetchedDevice.guardian_name,
-          guardian_relation: fetchedDevice.guardian_relation,
-          guardian_phone: fetchedDevice.guardian_phone,
-        }
+        this.device = { ...fetchedDevice }
       } catch (error) {
         const errorMessage =
           error.response?.data?.message || '기기 정보를 불러오는 데 실패했습니다.'
@@ -128,23 +118,15 @@ export default {
       this.message = ''
 
       try {
-        const payload = {
-          mac_address: this.device.mac_address,
-          name: this.device.name,
-          gender: this.device.gender,
-          birth_date: this.device.birth_date,
-          phone: this.device.phone,
-          guardian_name: this.device.guardian_name,
-          guardian_relation: this.device.guardian_relation,
-          guardian_phone: this.device.guardian_phone,
-        }
+        const payload = { ...this.device }
+        delete payload.id // Remove id from payload as it's not needed for update
 
         const response = await deviceService.updateDevice(this.deviceId, payload)
         this.setMessage(
           `기기 "${response.name}" (MAC: ${response.mac_address}) 정보가 성공적으로 업데이트되었습니다!`,
           'success'
         )
-        await this.fetchDeviceDetails()
+        this.device = { ...response }
       } catch (error) {
         const errorMessage = error.response?.data?.detail || '기기 정보 업데이트에 실패했습니다.'
         this.setMessage(errorMessage, 'danger')

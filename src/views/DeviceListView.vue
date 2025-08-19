@@ -46,9 +46,9 @@
 
 <script>
 import { deviceService } from '../services/deviceService'
-import LoadingSpinner from '@/components/device/list/LoadingSpinner.vue'
-import EmptyState from '@/components/device/list/EmptyState.vue'
-import DeviceTable from '@/components/device/list/DeviceTable.vue'
+import LoadingSpinner from '../components/device/list/LoadingSpinner.vue'
+import EmptyState from '../components/device/list/EmptyState.vue'
+import DeviceTable from '../components/device/list/DeviceTable.vue'
 
 export default {
   name: 'DeviceListView',
@@ -85,17 +85,20 @@ export default {
     },
     async removeDevice(deviceId) {
       if (confirm(`기기 ID: ${deviceId}을(를) 정말로 삭제하시겠습니까?`)) {
-        this.$set(this.isDeleting, deviceId, true)
+        this.isDeleting[deviceId] = true
         this.message = ''
         try {
           await deviceService.deleteDevice(deviceId)
           this.setMessage(`기기 ID: ${deviceId}이(가) 삭제되었습니다.`, 'success')
           await this.fetchDevices() // 목록 새로고침
         } catch (error) {
-          const errorMessage = error.response?.data?.message || '기기 삭제에 실패했습니다.'
+          const errorMessage =
+            error.response?.data?.detail ||
+            error.response?.data?.message ||
+            '기기 삭제에 실패했습니다.'
           this.setMessage(errorMessage, 'danger')
         } finally {
-          this.$set(this.isDeleting, deviceId, false)
+          this.isDeleting[deviceId] = false
         }
       }
     },

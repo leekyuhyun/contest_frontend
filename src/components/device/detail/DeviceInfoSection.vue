@@ -5,7 +5,7 @@
       <div class="col-md-6 mb-3">
         <label for="deviceId" class="form-label">기기 ID</label>
         <input type="text" class="form-control" id="deviceId" :value="device.id" disabled />
-        <div class="form-text text-muted">기기 ID는 수정할 수 없습니다.</div>
+        <div class="form-text text-muted">* 기기 ID는 수정할 수 없습니다.</div>
       </div>
       <div class="col-md-6 mb-3">
         <label for="macAddress" class="form-label">맥주소 (MAC Address)</label>
@@ -16,21 +16,10 @@
           :value="device.mac_address"
           disabled
         />
-        <div class="form-text text-muted">맥주소는 수정할 수 없습니다.</div>
+        <div class="form-text text-muted">* 맥주소는 수정할 수 없습니다.</div>
       </div>
     </div>
-    <div class="mb-3">
-      <label for="deviceName" class="form-label">기기 이름</label>
-      <input
-        type="text"
-        class="form-control"
-        id="deviceName"
-        :value="device.name"
-        @input="$emit('update:name', $event.target.value)"
-        required
-        placeholder="예: 왕곽봉님 기기"
-      />
-    </div>
+    <!-- Removed user name field as it belongs in UserInfoSection -->
   </div>
 </template>
 
@@ -43,7 +32,7 @@ export default {
       required: true,
     },
   },
-  emits: ['update:name'],
+  emits: [],
 }
 </script>
 
