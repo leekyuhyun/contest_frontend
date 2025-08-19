@@ -37,19 +37,19 @@ export default {
           icon: 'fas fa-video text-success',
           title: '실시간 모니터링',
           description: '24시간 끊임없는 감시로 위험 상황을 즉시 포착합니다.',
-          items: ['CCTV 연동', '실시간 영상 분석', '이상 징후 감지'],
+          items: ['하드웨어 연동', '실시간 모니터링', '이상 징후 감지'],
         },
         {
           icon: 'fas fa-brain text-info',
           title: 'AI 기반 분석',
           description: '인공지능이 복잡한 상황을 정확하게 판단합니다.',
-          items: ['딥러닝 알고리즘', '패턴 인식', '위험도 평가'],
+          items: ['STT', 'LLM', '위험도 평가'],
         },
         {
           icon: 'fas fa-bolt text-danger',
           title: '신속한 대응',
-          description: '위험 감지 시 관계 기관에 즉시 알림을 전송합니다.',
-          items: ['자동 신고', '보호자 알림', '초동 대응 지원'],
+          description: '위험 감지 시 관계 기관과 보호자에게 알림을 전송합니다.',
+          items: ['보호자 알림', '초동 대응 지원'],
         },
       ],
     }

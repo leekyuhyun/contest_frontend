@@ -3,7 +3,7 @@
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-lg-8 text-center">
-          <h2 class="cta-title text-white">The Cane of Minjeung과 함께하세요</h2>
+          <h2 class="cta-title text-white">민증의 지팡이와 함께하세요</h2>
           <p class="cta-subtitle text-white-50">더 안전한 환경을 위한 첫 걸음을 내딛어보세요</p>
           <div class="cta-buttons">
             <router-link to="/register-device" class="btn btn-light btn-lg me-3">
@@ -31,13 +31,13 @@ export default {
 }
 
 .cta-title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
   margin-bottom: 1rem;
 }
 
 .cta-subtitle {
-  font-size: 1.2rem;
+  font-size: 1rem;
   margin-bottom: 2rem;
 }
 

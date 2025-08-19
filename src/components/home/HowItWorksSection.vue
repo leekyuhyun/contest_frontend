@@ -35,7 +35,7 @@ export default {
         {
           icon: 'fas fa-search',
           title: '감지',
-          description: '스마트 센서와 CCTV가 주변 환경을 실시간으로 모니터링합니다.',
+          description: '스마트 감지 장치로 상황이 발생하면 센서 데이터를 서버로 전송합니다.',
         },
         {
           icon: 'fas fa-cogs',
@@ -45,7 +45,7 @@ export default {
         {
           icon: 'fas fa-phone',
           title: '대응',
-          description: '위험 감지 시 즉시 관계 기관과 보호자에게 알림을 전송합니다.',
+          description: '위험 감지 시 관계 기관과 보호자에게 알림을 전송합니다.',
         },
       ],
     }

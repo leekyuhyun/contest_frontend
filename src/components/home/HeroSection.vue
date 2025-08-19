@@ -6,8 +6,8 @@
         <div class="col-lg-6">
           <div class="hero-content">
             <h1 class="hero-title">
-              <span class="text-primary">The Cane of</span><br />
-              <span class="text-gradient">Minjeung</span>
+              <span class="text-primary">Aegis</span><br />
+              <span class="text-gradient">System</span>
             </h1>
             <p class="hero-subtitle">
               범죄 취약 계층을 위한 AI 기반 실시간 대응 서비스로<br />
@@ -57,7 +57,7 @@
             </div>
             <div class="floating-card card-3">
               <i class="fas fa-bell text-warning"></i>
-              <span>즉시 알림</span>
+              <span>알림</span>
             </div>
             <div class="hero-graphic">
               <div class="pulse-circle"></div>
@@ -80,7 +80,7 @@ export default {
 <style scoped>
 .hero-section {
   position: relative;
-  min-height: 100vh;
+  min-height: 80vh;
   display: flex;
   align-items: center;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
