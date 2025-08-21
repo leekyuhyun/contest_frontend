@@ -51,8 +51,8 @@ export const deviceService = {
 
       console.log('📤 전송할 데이터:', payload)
 
-      // 백엔드 라우터에 맞춰 POST 엔드포인트는 "/device/data"로 유지
-      const response = await api.post('/device/data', payload)
+      // 백엔드 라우터에 맞춰 POST 엔드포인트는 "/device"로 유지
+      const response = await api.post('/device', payload)
 
       console.log('✅ 기기 등록 성공:', response.data)
       return response.data
