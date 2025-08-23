@@ -11,29 +11,17 @@
               <LoadingSpinner v-if="isLoading" message="기기 목록을 불러오는 중..." />
 
               <!-- Replaced table with DeviceTable component -->
-              <DeviceTable
-                v-else-if="devices.length > 0"
-                :devices="devices"
-                :is-deleting="isDeleting"
-                @delete="removeDevice"
-              />
+              <DeviceTable v-else-if="devices.length > 0" :devices="devices" :is-deleting="isDeleting"
+                @delete="removeDevice" />
 
               <!-- Replaced empty state with EmptyState component -->
-              <EmptyState
-                v-else
-                message="아직 등록된 기기가 없습니다."
-                link-to="/register-device"
-                link-text="새 기기 등록하기"
-              />
+              <EmptyState v-else message="아직 등록된 기기가 없습니다." link-to="/register-device" link-text="새 기기 등록하기" />
 
               <!-- 메시지 -->
-              <div
-                v-if="message"
-                :class="[
-                  'alert mt-3',
-                  messageType === 'success' ? 'alert-success' : 'alert-danger',
-                ]"
-              >
+              <div v-if="message" :class="[
+                'alert mt-3',
+                messageType === 'success' ? 'alert-success' : 'alert-danger',
+              ]">
                 {{ message }}
               </div>
             </div>
@@ -75,6 +63,7 @@ export default {
       this.message = ''
       try {
         this.devices = await deviceService.getAllDevices()
+        console.log(this.devices)
       } catch (error) {
         const errorMessage =
           error.response?.data?.message || '기기 목록을 불러오는 데 실패했습니다.'
@@ -83,13 +72,13 @@ export default {
         this.isLoading = false
       }
     },
-    async removeDevice(deviceId) {
-      if (confirm(`기기 ID: ${deviceId}을(를) 정말로 삭제하시겠습니까?`)) {
-        this.isDeleting[deviceId] = true
+    async removeDevice(macAddr) {
+      if (confirm(`기기 ID: ${macAddr}을(를) 정말로 삭제하시겠습니까?`)) {
+        this.isDeleting[macAddr] = true
         this.message = ''
         try {
-          await deviceService.deleteDevice(deviceId)
-          this.setMessage(`기기 ID: ${deviceId}이(가) 삭제되었습니다.`, 'success')
+          await deviceService.deleteDevice(macAddr)
+          this.setMessage(`기기 ID: ${macAddr}이(가) 삭제되었습니다.`, 'success')
           await this.fetchDevices() // 목록 새로고침
         } catch (error) {
           const errorMessage =
@@ -98,7 +87,7 @@ export default {
             '기기 삭제에 실패했습니다.'
           this.setMessage(errorMessage, 'danger')
         } finally {
-          this.isDeleting[deviceId] = false
+          this.isDeleting[macAddr] = false
         }
       }
     },
@@ -145,6 +134,7 @@ export default {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

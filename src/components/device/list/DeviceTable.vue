@@ -15,13 +15,8 @@
         </tr>
       </thead>
       <tbody>
-        <DeviceTableRow
-          v-for="device in devices"
-          :key="device.id"
-          :device="device"
-          :is-deleting="isDeleting[device.id]"
-          @delete="handleDelete"
-        />
+        <DeviceTableRow v-for="device in devices" :key="device.id" :device="device" :is-deleting="isDeleting[macAddr]"
+          @delete="handleDelete" />
       </tbody>
     </table>
   </div>
@@ -46,8 +41,8 @@ export default {
     },
   },
   methods: {
-    handleDelete(deviceId) {
-      this.$emit('delete', deviceId)
+    handleDelete(macAddr) {
+      this.$emit('delete', macAddr)
     },
   },
 }
@@ -78,27 +73,35 @@ export default {
 .col-id {
   width: 8%;
 }
+
 .col-name {
   width: 15%;
 }
+
 .col-mac {
   width: 18%;
 }
+
 .col-gender {
   width: 10%;
 }
+
 .col-guardian-name {
   width: 12%;
 }
+
 .col-guardian-relation {
   width: 10%;
 }
+
 .col-guardian-phone {
   width: 15%;
 }
+
 .col-date {
   width: 15%;
 }
+
 .col-actions {
   width: 17%;
 }

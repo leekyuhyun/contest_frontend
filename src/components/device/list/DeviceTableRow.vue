@@ -18,13 +18,10 @@
     </td>
     <td class="text-center">
       <div class="btn-group" role="group">
-        <router-link
-          :to="{
-            name: 'device-detail',
-            params: { deviceId: device.id },
-          }"
-          class="btn btn-sm btn-outline-info"
-        >
+        <router-link :to="{
+          name: 'device-detail',
+          params: { macAddress: device.mac_address },
+        }" class="btn btn-sm btn-outline-info">
           상세 보기
         </router-link>
         <button class="btn btn-sm btn-outline-danger" @click="handleDelete" :disabled="isDeleting">

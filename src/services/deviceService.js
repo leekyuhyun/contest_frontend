@@ -18,7 +18,7 @@ export const deviceService = {
   async getDeviceByMac(macAddress) {
     try {
       console.log(`📡 MAC 주소로 기기 조회 요청 시작... MAC: ${macAddress}`)
-      const response = await api.get(`/device/mac/${macAddress}`)
+      const response = await api.get(`/device/${macAddress}`)
       console.log('✅ MAC 주소로 기기 조회 성공:', response.data)
       // Return the device data directly, not wrapped in a data property
       return response.data
@@ -75,10 +75,10 @@ export const deviceService = {
   },
 
   // 기기 삭제
-  async deleteDevice(deviceId) {
+  async deleteDevice(macAddr) {
     try {
-      console.log(`📡 기기 삭제 요청 시작... ID: ${deviceId}`)
-      const response = await api.delete(`/device/${deviceId}`)
+      console.log(`📡 기기 삭제 요청 시작... ID: ${macAddr}`)
+      const response = await api.delete(`/device/${macAddr}`)
       console.log('✅ 기기 삭제 성공:', response.data)
       return response.data
     } catch (error) {

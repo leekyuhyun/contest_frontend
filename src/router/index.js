@@ -27,7 +27,7 @@ const routes = [
   },
 
   {
-    path: '/device/:deviceId',
+    path: '/device/:macAddress',
     name: 'device-detail',
     component: DeviceDetailView,
     props: true,
