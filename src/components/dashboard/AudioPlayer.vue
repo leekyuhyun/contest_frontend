@@ -15,7 +15,7 @@
         </audio>
       </div>
 
-      <div class="audio-info mt-2">
+      <div class="audio-info">
         <small class="text-muted">
           <i class="fas fa-clock me-1"></i>
           녹음 시간: {{ emergencyTime }}

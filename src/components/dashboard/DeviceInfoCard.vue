@@ -7,11 +7,7 @@
             <i class="fas fa-user-shield me-2"></i>
             기기 정보
           </h3>
-          <button
-            class="btn btn-danger btn-sm end-situation-btn"
-            @click="$emit('endSituation')"
-            :disabled="loading"
-          >
+          <button class="btn btn-danger btn-sm end-situation-btn" @click="$emit('endSituation')" :disabled="loading">
             <i class="fas fa-stop-circle me-2"></i>
             상황 종료
           </button>
@@ -31,26 +27,19 @@
             <span class="label">이름:</span>
             <span class="value">{{ deviceInfo.name }}</span>
           </div>
-
+          <div class="info-row">
+            <span class="label">연락처:</span>
+            <span class="value">{{ deviceInfo.phone }}</span>
+          </div>
           <div class="info-row">
             <span class="label">보호자 이름:</span>
             <span class="value">{{ deviceInfo.guardian_name }}</span>
           </div>
-
           <div class="info-row">
             <span class="label">보호자 연락처:</span>
             <span class="value">{{ deviceInfo.guardian_phone }}</span>
           </div>
 
-          <div class="info-row">
-            <span class="label">발생 시간:</span>
-            <span class="value emergency-time">{{ emergencyTime }}</span>
-          </div>
-
-          <div class="info-row">
-            <span class="label">위치:</span>
-            <span class="value location-address">{{ currentLocation.address }}</span>
-          </div>
         </div>
 
         <div v-else class="alert alert-warning">
@@ -74,14 +63,6 @@ export default {
     deviceInfo: {
       type: Object,
       default: null,
-    },
-    emergencyTime: {
-      type: String,
-      default: '',
-    },
-    currentLocation: {
-      type: Object,
-      default: () => ({}),
     },
     errorMessage: {
       type: String,
@@ -132,13 +113,13 @@ export default {
 
 .device-details {
   display: grid;
-  grid-template-columns: 1fr 1fr 1.2fr 2fr 2.5fr;
-  gap: 20px;
+  grid-template-columns: 1fr 2fr 1fr 2fr;
+  gap: 1rem;
 }
 
 .info-row {
   display: flex;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   align-items: center;
   padding: 15px 25px;
   background: #f8f9fa;

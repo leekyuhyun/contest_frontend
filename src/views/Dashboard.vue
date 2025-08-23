@@ -2,38 +2,48 @@
   <div class="emergency-dashboard">
     <div class="dashboard-content">
       <!-- Split device info into separate component -->
-      <DeviceInfoCard
-        :loading="loading"
-        :deviceInfo="deviceInfo"
-        :emergencyTime="emergencyTime"
-        :currentLocation="currentLocation"
-        :errorMessage="errorMessage"
-        @endSituation="endSituation"
-      />
-
-      <!-- Split map and audio into separate components -->
-      <div class="map-audio-section">
-        <EmergencyMap :currentLocation="currentLocation" />
-        <AudioPlayer :emergencyTime="emergencyTime" />
+      <DeviceInfoCard :loading="loadingDeviceInfo" :deviceInfo="deviceInfo" :errorMessage="errorMessage"
+        @endSituation="endSituation" />
+      <TimelineSlider :data="sortedData" @select="handleSelect" @select-live="handleSelectLive" />
+      <MonitoringMap v-if="selectedData" :data="selectedData"></MonitoringMap>
+      <!-- <div v-if="loadingWs" class="text-center py-4">
+        이건 모른다잉
       </div>
+      <div v-else-if="sortedData.length === 0">
+        아직 뭐 없다잉
+      </div>
+      <div v-else>
+        지금은 뭐 있다잉
+      </div>
+      <div class="map-audio-section">
+        <ul>
+          <li v-for="item in sortedData" :key="item.created_at">
+            <strong>{{ formatDateTime(item.created_at) }}</strong>
+            <br>
+            위치: {{ item.lat }}, {{ item.lng }}
+            <br>
+            <audio v-if="item.audio_obj_key" :src="item.audio_obj_key" controls></audio>
+          </li>
+        </ul>
+      </div> -->
     </div>
   </div>
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
 import deviceService from '../services/deviceService.js'
-import DeviceInfoCard from '../components/emergency/DeviceInfoCard.vue'
-import EmergencyMap from '../components/emergency/EmergencyMap.vue'
-import AudioPlayer from '../components/emergency/AudioPlayer.vue'
+import DeviceInfoCard from '../components/dashboard/DeviceInfoCard.vue'
+import TimelineSlider from '@/components/dashboard/TimelineSlider.vue'
+import MonitoringMap from '@/components/dashboard/MonitoringMap.vue'
 
 export default {
-  name: 'EmergencyDashboard',
+  name: 'Dashboard',
   components: {
     DeviceInfoCard,
-    EmergencyMap,
-    AudioPlayer,
+    TimelineSlider,
+    MonitoringMap,
   },
   props: {
     macAddress: {
@@ -41,63 +51,64 @@ export default {
       required: true,
     },
   },
-  setup(props) {
+  methods: {
+    formatDateTime(dateTimeString) {
+      if (!dateTimeString) return '-'
+      return new Date(dateTimeString).toLocaleString('ko-KR')
+    },
+  },
+  setup() {
     const route = useRoute()
     const router = useRouter()
 
-    const loading = ref(true)
+    const loadingDeviceInfo = ref(true)
     const deviceInfo = ref(null)
-    const emergencyTime = ref('')
     const macAddress = ref(route.params.macAddress || '')
     const errorMessage = ref('')
-    const currentLocation = ref({
-      lat: 37.5665,
-      lng: 126.978,
-      address: '서울시 중구 명동2가 54-2',
-    })
 
-    const generateEmergencyTime = () => {
-      const now = new Date()
-      return now.toLocaleString('ko-KR', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      })
-    }
+    const loadingWs = ref(true)
+    const streamData = ref([])
+    const ws = ref(null)
 
-    const getFixedLocationByMac = mac => {
-      const locationMap = {
-        '0c:7a:15:d8:13:a1': {
-          lat: 37.5665,
-          lng: 126.978,
-          address: '서울시 중구 명동2가 54-2',
-        },
-        '11:11:11:11:11:11': {
-          lat: 37.5636,
-          lng: 126.9748,
-          address: '서울시 중구 을지로 66',
-        },
-        '12:34:46:89:77:80': {
-          lat: 37.5547,
-          lng: 126.9707,
-          address: '서울시 중구 남대문로 73',
-        },
-        default: {
-          lat: 37.5519,
-          lng: 126.9918,
-          address: '서울시 강남구 테헤란로 152',
-        },
+    const connectWebSocket = () => {
+      ws.value = new WebSocket(`ws://${import.meta.env.VITE_API_URL || '127.0.0.1:8000'}/ws/dashboard/${macAddress.value}`)
+
+      ws.value.onopen = () => {
+        console.log('WebSocket connected')
       }
 
-      return locationMap[mac] || locationMap['default']
+      ws.value.onmessage = (event) => {
+        const data = JSON.parse(event.data)
+        loadingWs.value = false;
+        console.log(data)
+        if (data.initial) {
+          streamData.value = data.data
+        } else {
+          console.log(data.data[0])
+          streamData.value.push(data.data[0])
+        }
+      }
+
+      ws.value.onclose = () => {
+        console.log('WebSocket disconnected, reconnecting in 10s...')
+        setTimeout(connectWebSocket, 10000)
+      }
+
+      ws.value.onerror = (err) => {
+        console.error('WebSocket error:', err)
+        ws.value.close()
+      }
+    }
+
+    const disconnectWebSocket = () => {
+      if (ws.value) {
+        ws.value.close()
+      }
     }
 
     const fetchDeviceInfo = async () => {
       try {
-        loading.value = true
+        loadingDeviceInfo.value = true
         errorMessage.value = ''
 
         if (!macAddress.value) {
@@ -106,25 +117,15 @@ export default {
           return
         }
 
-        console.log('[v0] Fetching device info for MAC:', macAddress.value)
-
         const response = await deviceService.getDeviceByMac(macAddress.value)
-        console.log('[v0] Device info response:', response)
 
         deviceInfo.value = response
-        emergencyTime.value = generateEmergencyTime()
 
-        const fixedLocation = getFixedLocationByMac(macAddress.value)
-        currentLocation.value = fixedLocation
       } catch (error) {
-        console.error('기기 정보 조회 실패:', error)
         deviceInfo.value = null
         errorMessage.value = error.message || '기기 정보를 불러오는 중 오류가 발생했습니다.'
-
-        const fixedLocation = getFixedLocationByMac(macAddress.value)
-        currentLocation.value = fixedLocation
       } finally {
-        loading.value = false
+        loadingDeviceInfo.value = false
       }
     }
 
@@ -135,18 +136,53 @@ export default {
       }
     }
 
+    const sortedData = computed(() => {
+      return [...streamData.value].sort((a, b) => new Date(new Date(a.created_at).getTime() - new Date(b.created_at).getTime()))
+    })
+
+    const selected = ref(0)
+
+    const handleSelect = (select) => {
+      selected.value = select;
+    }
+
+    const selectedData = computed(() => {
+      return streamData.value.find(
+        item => new Date(item.created_at).getTime() === selected.value
+      )
+    })
+
+    const selectedLive = ref(true)
+
+    const handleSelectLive = (select) => {
+      selected.value = select;
+    }
+
     onMounted(() => {
       fetchDeviceInfo()
+      connectWebSocket()
+    })
+
+    onUnmounted(() => {
+      disconnectWebSocket()
+    })
+
+    onBeforeRouteLeave(() => {
+      disconnectWebSocket()
     })
 
     return {
-      loading,
+      loadingDeviceInfo,
       deviceInfo,
-      emergencyTime,
       macAddress,
       errorMessage,
-      currentLocation,
       endSituation,
+      loadingWs,
+      sortedData,
+      selected,
+      selectedData,
+      handleSelect,
+      handleSelectLive,
     }
   },
 }

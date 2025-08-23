@@ -74,9 +74,9 @@ export const cctvService = {
     return this.getCCTVsByRegion(bigPosition, smallPosition, skip, limit)
   },
 
-  async getNearbyCCTVs(lat, lng, radius = 200) {
+  async getNearbyCCTVs(lat, lng, count= 6) {
     try {
-      const params = { lat, lng, radius }
+      const params = { lat, lng, count }
       const response = await api.get('/cctv/nearby', { params })
       return response.data
     } catch (error) {

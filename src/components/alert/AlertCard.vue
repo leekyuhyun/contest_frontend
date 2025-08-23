@@ -29,6 +29,8 @@
           <i class="fas fa-external-link-alt me-1"></i>
           모니터링
         </button>
+        <!-- TODO: 상황종료 버튼 만들기 -->
+        <!-- 상황종료 버튼 누르면 pop-up 을 통해 재확인후 삭제 -->
       </div>
     </div>
   </div>

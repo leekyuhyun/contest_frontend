@@ -54,7 +54,7 @@
 
 <script>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, onBeforeRouteLeave } from 'vue-router'
 import AlertSummaryBadges from '@/components/alert/AlertSummaryBadges.vue'
 import AlertCard from '@/components/alert/AlertCard.vue'
 import StatisticsGrid from '@/components/alert/StatisticsGrid.vue'
@@ -88,8 +88,11 @@ export default {
           const idx = alerts.value.findIndex(d => d.mac_addr === data.data[0].mac_addr)
           if (idx !== -1) {
             alerts.value[idx] = { ...alerts.value[idx], ...data.data[0] }
+            if (data.data[0].status === "TERMINATED") {
+              alerts.value.splice(idx, 1)
+            }
           } else {
-            alerts.value += data.data[0]
+            alerts.value.push(data.data[0])
           }
         }
       }
@@ -147,6 +150,10 @@ export default {
     })
 
     onUnmounted(() => {
+      disconnectWebSocket()
+    })
+
+    onBeforeRouteLeave(() => {
       disconnectWebSocket()
     })
 
