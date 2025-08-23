@@ -1,7 +1,7 @@
 <template>
   <div class="alert-summary">
-    <span class="badge bg-danger me-2">긴급: {{ criticalCount }}</span>
-    <span class="badge bg-warning me-2">주의: {{ warningCount }}</span>
+    <span class="badge bg-danger me-2">위험: {{ dangerCount }}</span>
+    <span class="badge bg-warning me-2">경고: {{ warningCount }}</span>
   </div>
 </template>
 
@@ -9,7 +9,7 @@
 export default {
   name: 'AlertSummaryBadges',
   props: {
-    criticalCount: {
+    dangerCount: {
       type: Number,
       default: 0,
     },

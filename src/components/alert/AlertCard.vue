@@ -1,46 +1,34 @@
 <template>
-  <div :class="['alert-card', `alert-${alert.severity}`]">
+  <div :class="['alert-card', `alert-${alert.status === 'WARNING' ? 'warning' : 'danger'}`]">
     <div class="alert-header">
       <div class="alert-info">
-        <i :class="getAlertIcon(alert.severity)" class="alert-icon"></i>
+        <i :class="getAlertIcon(alert.status)" class="alert-icon"></i>
         <div class="alert-details">
-          <h5 class="alert-title">{{ alert.title }}</h5>
-          <p class="alert-description">{{ alert.description }}</p>
+          <h5 class="alert-title">{{ `기기 소지자에게 ${alert.status === 'WARNING' ? '경고' : '위험'} 상황이 발생했습니다` }}</h5>
+          <!-- <p class="alert-description">{{ alert.description }}</p> -->
         </div>
       </div>
-      <div class="alert-actions">
-        <span class="alert-time">{{ formatTime(alert.timestamp) }}</span>
-        <div class="action-buttons">
-          <button
-            v-if="alert.severity === 'critical'"
-            class="btn btn-danger btn-sm me-2"
-            @click="$emit('emergency-response', alert.macAddress)"
-          >
-            <i class="fas fa-external-link-alt me-1"></i>
-            응급 대응
-          </button>
-          <button
-            class="btn btn-outline-success btn-sm me-2"
-            @click="$emit('acknowledge', alert.id)"
-            :disabled="alert.acknowledged"
-          >
-            <i class="fas fa-check me-1"></i>
-            {{ alert.acknowledged ? '확인됨' : '확인' }}
-          </button>
-          <button class="btn btn-outline-secondary btn-sm" @click="$emit('dismiss', alert.id)">
-            <i class="fas fa-times me-1"></i>
-            해제
-          </button>
-        </div>
-      </div>
+      <span class="alert-time">{{ formatTime(alert.created_at) }}</span>
     </div>
 
-    <div v-if="alert.deviceInfo" class="alert-device-info">
+    <div v-if="alert" class="alert-device-info">
       <div class="device-details">
-        <span><strong>기기:</strong> {{ alert.deviceInfo.name }}</span>
-        <span><strong>보호자:</strong> {{ alert.deviceInfo.guardian_name }}</span>
-        <span><strong>연락처:</strong> {{ alert.deviceInfo.guardian_phone }}</span>
-        <span v-if="alert.location"><strong>위치:</strong> {{ alert.location }}</span>
+        <span><strong>이름:</strong> {{ alert.name }}</span>
+        <span><strong>연락처:</strong> {{ alert.phone }}</span>
+        <span><strong>보호자:</strong> {{ alert.guardian_name }}</span>
+        <span><strong>보호자 연락처:</strong> {{ alert.guardian_phone }}</span>
+        <span><strong>기기 식별자:</strong> {{ alert.mac_addr }}</span>
+        <span><strong>AI 추론 횟수:</strong> {{ alert.ai_inference_count }}회</span>
+        <span></span>
+        <span><strong>보호자와의 관계:</strong> {{ alert.guardian_relation }}</span>
+      </div>
+    </div>
+    <div class="alert-actions">
+      <div class="action-buttons">
+        <button class="btn btn-warning btn-sm me-2" @click="$emit('route', alert.mac_addr)">
+          <i class="fas fa-external-link-alt me-1"></i>
+          모니터링
+        </button>
       </div>
     </div>
   </div>
@@ -55,18 +43,20 @@ export default {
       required: true,
     },
   },
-  emits: ['acknowledge', 'dismiss', 'emergency-response'],
+  emits: ['route'],
   methods: {
-    getAlertIcon(severity) {
+    getAlertIcon(status) {
       const icons = {
-        critical: 'fas fa-exclamation-triangle text-danger',
+        danger: 'fas fa-exclamation-triangle text-danger',
         warning: 'fas fa-exclamation-circle text-warning',
       }
-      return icons[severity] || 'fas fa-bell'
+      return icons[status] || 'fas fa-bell'
     },
     formatTime(timestamp) {
       const now = new Date()
-      const diff = now - new Date(timestamp)
+      const utcDate = new Date(timestamp)
+      const kstDate = new Date(utcDate.getTime() + 9 * 60 * 60 * 1000)
+      const diff = now - kstDate
       const minutes = Math.floor(diff / 60000)
 
       if (minutes < 1) return '방금 전'
@@ -98,7 +88,7 @@ export default {
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
-.alert-critical {
+.alert-danger {
   background: #fff5f5;
   border-left-color: #dc3545;
 }
@@ -154,10 +144,11 @@ export default {
   gap: 8px;
   flex-wrap: wrap;
   justify-content: flex-end;
+  margin-top: 0.8rem;
 }
 
 .alert-device-info {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.5);
   border-radius: 8px;
   padding: 15px;
   margin-top: 15px;
@@ -165,7 +156,7 @@ export default {
 
 .device-details {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
   font-size: 0.9rem;
 }

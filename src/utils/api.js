@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // API 기본 설정 - 환경 변수 사용
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000', // FastAPI 서버 URL에 맞게 설정
+  baseURL: `http://${import.meta.env.VITE_API_URL || '127.0.0.1:8000'}`, // FastAPI 서버 URL에 맞게 설정
   timeout: 30000, // Updated timeout value to 30 seconds
   headers: {
     'Content-Type': 'application/json',

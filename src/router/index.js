@@ -4,7 +4,7 @@ import DeviceRegistration from '@/views/DeviceRegistration.vue'
 import DeviceListView from '@/views/DeviceListView.vue'
 import DeviceDetailView from '../views/DeviceDetailView.vue'
 import Monitoring from '@/views/Monitoring.vue'
-import EmergencyDashboard from '@/views/EmergencyDashboard.vue'
+import Dashboard from '@/views/Dashboard.vue'
 import SituationAlertDashboard from '@/views/SituationAlertDashboard.vue'
 
 const routes = [
@@ -40,9 +40,9 @@ const routes = [
   },
 
   {
-    path: '/emergency/:macAddress',
-    name: 'emergency-dashboard',
-    component: EmergencyDashboard,
+    path: '/dashboard/:macAddress',
+    name: 'dashboard',
+    component: Dashboard,
     props: true,
   },
 

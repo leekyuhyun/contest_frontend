@@ -6,10 +6,7 @@
           <i class="fas fa-bell me-3"></i>
           상황 알림 대시보드
         </h2>
-        <AlertSummaryBadges
-          :critical-count="criticalAlerts.length"
-          :warning-count="warningAlerts.length"
-        />
+        <AlertSummaryBadges :danger-count="dangerAlerts.length" :warning-count="warningAlerts.length" />
       </div>
     </div>
 
@@ -21,10 +18,6 @@
             <i class="fas fa-exclamation-triangle me-2"></i>
             실시간 알림
           </h4>
-          <button class="btn btn-outline-secondary btn-sm" @click="refreshAlerts">
-            <i class="fas fa-sync-alt me-1"></i>
-            새로고침
-          </button>
         </div>
 
         <div v-if="loading" class="text-center py-4">
@@ -40,19 +33,12 @@
         </div>
 
         <div v-else class="alerts-list">
-          <AlertCard
-            v-for="alert in sortedAlerts"
-            :key="alert.id"
-            :alert="alert"
-            @acknowledge="acknowledgeAlert"
-            @dismiss="dismissAlert"
-            @emergency-response="goToEmergencyDashboard"
-          />
+          <AlertCard v-for="alert in sortedAlerts" :key="alert.id" :alert="alert" @route="goToDashboard" />
         </div>
       </div>
 
       <!-- 통계 섹션 -->
-      <div class="statistics-section">
+      <!-- <div class="statistics-section">
         <div class="section-header">
           <h4>
             <i class="fas fa-chart-bar me-2"></i>
@@ -61,7 +47,7 @@
         </div>
 
         <StatisticsGrid :stats="todayStats" />
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -84,150 +70,94 @@ export default {
     const router = useRouter()
     const loading = ref(false)
     const alerts = ref([])
-    const refreshInterval = ref(null)
+    const ws = ref(null)
 
-    const sampleAlerts = [
-      {
-        id: 1,
-        title: '낙상 감지',
-        description: '이규현님의 기기에서 낙상이 감지되었습니다.',
-        severity: 'critical',
-        timestamp: new Date(),
-        acknowledged: false,
-        macAddress: '0c:7a:15:d8:13:a1',
-        deviceInfo: {
-          name: '이규현',
-          guardian_name: '따이안',
-          guardian_phone: '010-1234-5678',
-        },
-        location: '서울시 중구 명동2가 54-2',
-      },
-      {
-        id: 2,
-        title: '폭행 상황 감지',
-        description: '이규현님의 기기에서 폭행 상황이 감지되었습니다.',
-        severity: 'critical',
-        timestamp: new Date(Date.now() - 15 * 60 * 1000),
-        acknowledged: false,
-        macAddress: '11:11:11:11:11:11',
-        deviceInfo: {
-          name: '이규현',
-          guardian_name: '오약',
-          guardian_phone: '010-4444-8888',
-        },
-        location: '서울시 중구 을지로 66',
-      },
-      {
-        id: 3,
-        title: '낙상 감지',
-        description: '따이안님의 기기에서 낙상이 감지되었습니다.',
-        severity: 'critical',
-        timestamp: new Date(Date.now() - 30 * 60 * 1000),
-        acknowledged: true,
-        macAddress: '12:34:46:89:77:80',
-        deviceInfo: {
-          name: '따이안',
-          guardian_name: '따옷',
-          guardian_phone: '010-4444-9999',
-        },
-        location: '서울시 중구 남대문로 73',
-      },
-      {
-        id: 4,
-        title: '폭행 상황 감지',
-        description: '따이안님의 기기에서 폭행 상황이 감지되었습니다.',
-        severity: 'critical',
-        timestamp: new Date(Date.now() - 45 * 60 * 1000),
-        acknowledged: false,
-        macAddress: '12:34:46:89:77:80',
-        deviceInfo: {
-          name: '따이안',
-          guardian_name: '따옷',
-          guardian_phone: '010-4444-9999',
-        },
-        location: '서울시 중구 남대문로 73',
-      },
-    ]
+    const connectWebSocket = () => {
+      ws.value = new WebSocket(`ws://${import.meta.env.VITE_API_URL || '127.0.0.1:8000'}/ws/dashboard`)
 
-    const todayStats = ref({
-      critical: 4,
-      warning: 0,
-      resolved: 1,
-      avgResponseTime: 3.2,
-    })
+      ws.value.onopen = () => {
+        console.log('WebSocket connected')
+      }
 
-    const criticalAlerts = computed(() =>
-      alerts.value.filter(alert => alert.severity === 'critical')
-    )
+      ws.value.onmessage = (event) => {
+        const data = JSON.parse(event.data)
+        if (data.initial) {
+          alerts.value = data.data
+        } else {
+          const idx = alerts.value.findIndex(d => d.mac_addr === data.data[0].mac_addr)
+          if (idx !== -1) {
+            alerts.value[idx] = { ...alerts.value[idx], ...data.data[0] }
+          } else {
+            alerts.value += data.data[0]
+          }
+        }
+      }
 
-    const warningAlerts = computed(() => alerts.value.filter(alert => alert.severity === 'warning'))
+      ws.value.onclose = () => {
+        console.log('WebSocket disconnected, reconnecting in 10s...')
+        setTimeout(connectWebSocket, 10000)
+      }
+
+      ws.value.onerror = (err) => {
+        console.error('WebSocket error:', err)
+        ws.value.close()
+      }
+    }
+
+    const disconnectWebSocket = () => {
+      if (ws.value) {
+        ws.value.close()
+      }
+    }
+
+    // const todayStats = ref({
+    //   critical: 4,
+    //   warning: 0,
+    //   resolved: 1,
+    //   avgResponseTime: 3.2,
+    // })
+
+    const dangerAlerts = computed(() => alerts.value.filter(alert => alert.status === 'DANGER'))
+    const warningAlerts = computed(() => alerts.value.filter(alert => alert.status === 'WARNING'))
 
     const sortedAlerts = computed(() => {
-      const severityOrder = { critical: 3, warning: 2 }
+      const statusOrder = { critical: 3, warning: 2 }
       return [...alerts.value].sort((a, b) => {
-        if (severityOrder[b.severity] !== severityOrder[a.severity]) {
-          return severityOrder[b.severity] - severityOrder[a.severity]
+        if (statusOrder[b.status] !== statusOrder[a.status]) {
+          return statusOrder[b.status] - statusOrder[a.status]
         }
         return new Date(b.timestamp) - new Date(a.timestamp)
       })
     })
 
-    const loadAlerts = async () => {
-      loading.value = true
-      try {
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        alerts.value = sampleAlerts
-      } catch (error) {
-        console.error('알림 로드 실패:', error)
-      } finally {
-        loading.value = false
-      }
-    }
-
-    const refreshAlerts = () => {
-      loadAlerts()
-    }
-
-    const acknowledgeAlert = alertId => {
-      const alert = alerts.value.find(a => a.id === alertId)
-      if (alert) {
-        alert.acknowledged = true
-      }
-    }
-
     const dismissAlert = alertId => {
       alerts.value = alerts.value.filter(a => a.id !== alertId)
     }
 
-    const goToEmergencyDashboard = macAddress => {
+    const goToDashboard = macAddress => {
       router.push({
-        name: 'emergency-dashboard',
+        name: 'dashboard',
         params: { macAddress },
       })
     }
 
     onMounted(() => {
-      loadAlerts()
-      refreshInterval.value = setInterval(refreshAlerts, 30000)
+      connectWebSocket()
     })
 
     onUnmounted(() => {
-      if (refreshInterval.value) {
-        clearInterval(refreshInterval.value)
-      }
+      disconnectWebSocket()
     })
 
     return {
       loading,
       alerts,
-      criticalAlerts,
+      dangerAlerts,
       warningAlerts,
       sortedAlerts,
-      todayStats,
-      refreshAlerts,
-      acknowledgeAlert,
+      // todayStats,
       dismissAlert,
-      goToEmergencyDashboard,
+      goToDashboard,
     }
   },
 }
