@@ -68,7 +68,7 @@ export default {
   },
   setup() {
     const router = useRouter()
-    const loading = ref(false)
+    const loading = ref(true)
     const alerts = ref([])
     const ws = ref(null)
 
@@ -81,6 +81,7 @@ export default {
 
       ws.value.onmessage = (event) => {
         const data = JSON.parse(event.data)
+        loading.value = false;
         if (data.initial) {
           alerts.value = data.data
         } else {
