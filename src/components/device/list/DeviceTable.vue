@@ -15,6 +15,7 @@
         </tr>
       </thead>
       <tbody>
+        <!-- TODO: isDeleting 여기가 문제인디 모르겠어염 -->
         <DeviceTableRow v-for="device in devices" :key="device.id" :device="device" :is-deleting="isDeleting[macAddr]"
           @delete="handleDelete" />
       </tbody>
