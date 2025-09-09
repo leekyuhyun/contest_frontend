@@ -4,13 +4,15 @@
 
 ### VSCode Extension
 
-- Prettier / ESLint / Vue-Official
+- **Prettier**
+- **ESLint**
+- **Vue-Official**
 
 ### Repository Clone (Frontend)
 
 ```bash
-   git clone https://github.com/The-cane-of-Min-Jeung/frontend.git
-   cd <frontend>
+git clone https://github.com/The-cane-of-Min-Jeung/frontend.git
+cd <frontend>
 ```
 
 ### Install Dependencies
@@ -22,7 +24,7 @@ npm install
 ### Setting Environmental Variables (.env)
 
 ```bash
-    email : leekh010502@naver.com
+email : leekh010502@naver.com
 ```
 
 ### Start Development Server
