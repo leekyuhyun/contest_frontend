@@ -161,21 +161,26 @@ export default {
 
 <style scoped>
 .form-section-card {
-  background: #f8f9ff;
-  border-radius: 16px;
+  background: #fdfdff;
+  border-radius: 12px;
   padding: 2rem;
   margin-bottom: 2rem;
-  border: 1px solid #e1e8ff;
-  transition: all 0.3s ease;
+  border: 1px solid #e2e8f0;
+  transition: border-color 0.3s ease;
 }
 
-.form-section-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.1);
+.form-section-card:focus-within {
+  border-color: #4299e1;
 }
 
+.device-info {
+  border-left: 4px solid #4299e1;
+}
 .user-info {
-  border-left: 4px solid #4facfe;
+  border-left: 4px solid #38b2ac;
+}
+.guardian-info {
+  border-left: 4px solid #ed8936;
 }
 
 .section-header-modern {
@@ -185,19 +190,25 @@ export default {
 }
 
 .section-icon-modern {
-  width: 60px;
-  height: 60px;
-  border-radius: 16px;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   margin-right: 1rem;
   color: white;
 }
 
+.section-icon-modern.device {
+  background-color: #4299e1;
+}
 .section-icon-modern.user {
-  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  background-color: #38b2ac;
+}
+.section-icon-modern.guardian {
+  background-color: #ed8936;
 }
 
 .section-content {
@@ -205,8 +216,8 @@ export default {
 }
 
 .section-title {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.25rem;
+  font-weight: 600;
   margin-bottom: 0.25rem;
   color: #2d3748;
 }
@@ -214,7 +225,7 @@ export default {
 .section-subtitle {
   color: #718096;
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 .form-group-modern {
@@ -224,18 +235,19 @@ export default {
 .form-label-modern {
   display: block;
   font-weight: 600;
-  color: #2d3748;
+  color: #4a5568;
   margin-bottom: 0.5rem;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 .form-label-modern i {
   margin-right: 0.5rem;
-  color: #667eea;
+  color: #a0aec0;
 }
 
 .required {
   color: #e53e3e;
+  margin-left: 2px;
 }
 
 .input-container,
@@ -246,9 +258,9 @@ export default {
 .form-input-modern,
 .form-select-modern {
   width: 100%;
-  padding: 0.875rem 1rem 0.875rem 3rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
+  padding: 0.75rem 1rem 0.75rem 2.75rem;
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
   font-size: 1rem;
   transition: all 0.3s ease;
   background: white;
@@ -257,9 +269,8 @@ export default {
 .form-input-modern:focus,
 .form-select-modern:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-  transform: translateY(-1px);
+  border-color: #4299e1;
+  box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
 }
 
 .input-icon,
@@ -271,6 +282,12 @@ export default {
   color: #a0aec0;
   font-size: 1rem;
   pointer-events: none;
+  transition: color 0.3s ease;
+}
+
+.form-input-modern:focus ~ .input-icon,
+.form-select-modern:focus ~ .input-icon {
+  color: #4299e1;
 }
 
 .select-icon {
@@ -306,9 +323,9 @@ export default {
 
 @media (max-width: 768px) {
   .section-icon-modern {
-    width: 50px;
-    height: 50px;
-    font-size: 1.25rem;
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
   }
 
   .form-section-card {

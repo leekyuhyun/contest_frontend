@@ -37,9 +37,9 @@ export default {
 
 <style scoped>
 .help-section {
-  background: linear-gradient(135deg, #f7fafc, #edf2f7);
-  border-radius: 16px;
-  padding: 2rem;
+  background: #f7fafc; /* Changed from gradient to solid color */
+  border-radius: 12px;
+  padding: 1.5rem; /* Adjusted padding */
   margin-top: 3rem;
   border: 1px solid #e2e8f0;
 }
@@ -48,18 +48,19 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem; /* Adjusted margin */
 }
 
 .help-header i {
-  color: #667eea;
-  font-size: 1.25rem;
+  color: #4299e1; /* Updated icon color */
+  font-size: 1.1rem;
 }
 
 .help-header h4 {
   margin: 0;
   color: #2d3748;
-  font-weight: 700;
+  font-weight: 600; /* Adjusted font-weight */
+  font-size: 1.1rem;
 }
 
 .help-content {

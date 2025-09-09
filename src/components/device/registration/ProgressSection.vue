@@ -23,9 +23,9 @@ export default {
 
 <style scoped>
 .card-header-modern {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #ffffff; /* Removed gradient */
   padding: 2rem;
-  color: white;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .progress-container {
@@ -34,28 +34,16 @@ export default {
 
 .progress-modern {
   height: 8px;
-  background: rgba(255, 255, 255, 0.2);
+  background: #e2e8f0; /* Lighter background for progress bar */
   border-radius: 10px;
   overflow: hidden;
 }
 
 .progress-bar-modern {
   height: 100%;
-  background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+  background-color: #4299e1; /* Changed to solid primary color */
   border-radius: 10px;
   transition: width 0.6s ease;
-  position: relative;
-}
-
-.progress-bar-modern::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  animation: shimmer 2s infinite;
 }
 
 .progress-text {
@@ -63,14 +51,6 @@ export default {
   margin-top: 0.5rem;
   font-weight: 600;
   font-size: 0.9rem;
-}
-
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
+  color: #4a5568; /* Changed text color */
 }
 </style>

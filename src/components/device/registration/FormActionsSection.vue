@@ -42,13 +42,13 @@ export default {
 }
 
 .btn-modern {
-  padding: 1rem 2rem;
-  border: none;
-  border-radius: 12px;
+  padding: 0.875rem 2rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -57,30 +57,31 @@ export default {
 }
 
 .btn-modern.primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #3182ce;
   color: white;
+  border-color: #3182ce;
 }
 
 .btn-modern.primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+  background-color: #2b6cb0;
+  border-color: #2b6cb0;
 }
 
 .btn-modern.primary:disabled {
-  background: #a0aec0;
+  background-color: #a0aec0;
+  border-color: #a0aec0;
   cursor: not-allowed;
-  transform: none;
 }
 
 .btn-modern.secondary {
-  background: #f7fafc;
+  background: #ffffff;
   color: #4a5568;
-  border: 2px solid #e2e8f0;
+  border-color: #e2e8f0;
 }
 
 .btn-modern.secondary:hover {
-  background: #edf2f7;
-  transform: translateY(-1px);
+  background: #f7fafc;
+  border-color: #cbd5e0;
 }
 
 @media (max-width: 768px) {

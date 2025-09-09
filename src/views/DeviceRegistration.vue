@@ -1,6 +1,5 @@
 <template>
   <div class="device-registration-page">
-    <!-- Replaced hero section with HeroSection component -->
     <HeroSection />
 
     <div class="form-section">
@@ -8,19 +7,15 @@
         <div class="row justify-content-center">
           <div class="col-lg-10">
             <div class="registration-card">
-              <!-- Replaced progress section with ProgressSection component -->
               <ProgressSection :progressPercentage="progressPercentage" />
 
               <div class="card-body-modern">
                 <form @submit.prevent="registerDevice">
-                  <!-- Replaced device info section with DeviceInfoSection component -->
                   <DeviceInfoSection
                     :macAddress="newDevice.mac_address"
                     :isValidMacAddress="isValidMacAddress"
                     @update:macAddress="updateMacAddress"
                   />
-
-                  <!-- Replaced user info section with UserInfoSection component -->
                   <UserInfoSection
                     :userInfo="{
                       name: newDevice.name,
@@ -30,8 +25,6 @@
                     }"
                     @update:userInfo="updateUserInfo"
                   />
-
-                  <!-- Replaced guardian info section with GuardianInfoSection component -->
                   <GuardianInfoSection
                     :guardianInfo="{
                       name: newDevice.guardian_name,
@@ -40,8 +33,6 @@
                     }"
                     @update:guardianInfo="updateGuardianInfo"
                   />
-
-                  <!-- Replaced form actions with FormActionsSection component -->
                   <FormActionsSection
                     :isSubmitting="isSubmitting"
                     :isFormValid="isFormValid"
@@ -61,8 +52,6 @@
                   ></i>
                   {{ message }}
                 </div>
-
-                <!-- Replaced help section with HelpSection component -->
                 <HelpSection />
               </div>
             </div>
@@ -276,7 +265,7 @@ export default {
 <style scoped>
 .device-registration-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #f0f2f5; /* Changed from gradient to solid color */
 }
 
 .form-section {
@@ -285,10 +274,10 @@ export default {
 
 .registration-card {
   background: white;
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  border-radius: 12px; /* Reduced border-radius */
+  border: 1px solid #e2e8f0; /* Added border */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Softened shadow */
   overflow: hidden;
-  animation: slideInUp 0.8s ease-out;
 }
 
 .card-body-modern {
@@ -298,34 +287,24 @@ export default {
 .message-modern {
   margin-top: 2rem;
   padding: 1rem 1.5rem;
-  border-radius: 12px;
+  border-radius: 8px; /* Reduced border-radius */
   display: flex;
   align-items: center;
   gap: 0.75rem;
   font-weight: 500;
+  border: 1px solid transparent;
 }
 
 .message-modern.success {
-  background: linear-gradient(135deg, #c6f6d5, #9ae6b4);
-  color: #22543d;
-  border: 1px solid #9ae6b4;
+  background-color: #f0fff4;
+  color: #2f855a;
+  border-color: #9ae6b4;
 }
 
 .message-modern.error {
-  background: linear-gradient(135deg, #fed7d7, #feb2b2);
-  color: #742a2a;
-  border: 1px solid #feb2b2;
-}
-
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  background-color: #fff5f5;
+  color: #c53030;
+  border-color: #feb2b2;
 }
 
 @media (max-width: 768px) {
