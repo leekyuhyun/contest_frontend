@@ -1,29 +1,34 @@
 <template>
-  <div class="table-responsive">
-    <table class="table table-hover table-striped device-table">
-      <thead class="table-dark">
+  <div class="table-responsive-wrapper">
+    <table class="table table-hover device-table responsive-table">
+      <thead class="table-header-custom">
         <tr>
-          <th scope="col" class="col-id text-center">ID</th>
-          <th scope="col" class="col-name text-center">기기 이름</th>
-          <th scope="col" class="col-mac text-center">맥주소</th>
-          <th scope="col" class="col-gender text-center">성별</th>
-          <th scope="col" class="col-guardian-name text-center">보호자 이름</th>
-          <th scope="col" class="col-guardian-relation text-center">보호자 관계</th>
-          <th scope="col" class="col-guardian-phone text-center">보호자 연락처</th>
-          <th scope="col" class="col-date text-center">등록일</th>
-          <th scope="col" class="col-actions text-center">관리</th>
+          <th scope="col" class="text-center">ID</th>
+          <th scope="col">사용자</th>
+          <th scope="col">MAC 주소</th>
+          <th scope="col" class="text-center">성별</th>
+          <th scope="col">보호자</th>
+          <th scope="col">관계</th>
+          <th scope="col">보호자 연락처</th>
+          <th scope="col">등록일</th>
+          <th scope="col" class="text-center">관리</th>
         </tr>
       </thead>
       <tbody>
-        <!-- TODO: isDeleting 여기가 문제인디 모르겠어염 -->
-        <DeviceTableRow v-for="device in devices" :key="device.id" :device="device" :is-deleting="isDeleting[macAddr]"
-          @delete="handleDelete" />
+        <DeviceTableRow
+          v-for="device in devices"
+          :key="device.mac_address"
+          :device="device"
+          :is-deleting="isDeleting[device.mac_address]"
+          @delete="handleDelete"
+        />
       </tbody>
     </table>
   </div>
 </template>
 
 <script>
+// ... 기존 스크립트 내용은 그대로 유지 ...
 import DeviceTableRow from './DeviceTableRow.vue'
 
 export default {
@@ -53,68 +58,73 @@ export default {
 .device-table {
   margin-bottom: 0;
   font-size: 0.9rem;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
-.device-table th {
-  border-top: none;
+.table-header-custom th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #e2e8f0;
+  color: #4a5568;
   font-weight: 600;
-  color: white;
   white-space: nowrap;
   vertical-align: middle;
-  text-align: center;
+  padding: 0.75rem 1rem;
 }
 
 .device-table td {
   vertical-align: middle;
-  padding: 0.75rem 0.5rem;
-  text-align: center;
+  padding: 0.75rem 1rem;
 }
 
-/* 컬럼별 너비 조정 */
-.col-id {
-  width: 8%;
-}
-
-.col-name {
-  width: 15%;
-}
-
-.col-mac {
-  width: 18%;
-}
-
-.col-gender {
-  width: 10%;
-}
-
-.col-guardian-name {
-  width: 12%;
-}
-
-.col-guardian-relation {
-  width: 10%;
-}
-
-.col-guardian-phone {
-  width: 15%;
-}
-
-.col-date {
-  width: 15%;
-}
-
-.col-actions {
-  width: 17%;
-}
-
-.table-responsive {
+.table-responsive-wrapper {
   border-radius: 10px;
-  overflow: hidden;
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
 }
 
-@media (max-width: 1200px) {
-  .device-table {
-    font-size: 0.8rem;
+.table-hover tbody tr:hover {
+  background-color: #f7fafc;
+}
+
+/* 모바일 반응형 스타일 */
+@media (max-width: 992px) {
+  /* 992px 이하에서 카드 형태로 변경 */
+  .responsive-table {
+    border: none;
+  }
+
+  .responsive-table thead {
+    display: none; /* 헤더 숨기기 */
+  }
+
+  .responsive-table tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .responsive-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e9ecef;
+    text-align: right;
+  }
+
+  .responsive-table tr td:last-child {
+    border-bottom: none;
+  }
+
+  .responsive-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #4a5568;
+    margin-right: 1rem;
+    text-align: left;
   }
 }
 </style>

@@ -1,27 +1,39 @@
 <template>
-  <div class="registration-container">
-    <div class="container-fluid px-4">
+  <div class="device-list-page">
+    <div class="container-fluid px-md-4 px-2">
+      <div class="page-header">
+        <h1 class="page-title">등록 기기 목록</h1>
+        <p class="page-subtitle">시스템에 등록된 모든 기기를 확인하고 관리합니다.</p>
+      </div>
+
       <div class="row justify-content-center">
         <div class="col-12">
           <div class="card card-modern">
             <div class="card-body card-body-modern">
-              <h2 class="text-center mb-4 registration-title">등록된 스마트 기기 목록</h2>
-
-              <!-- Replaced loading state with LoadingSpinner component -->
               <LoadingSpinner v-if="isLoading" message="기기 목록을 불러오는 중..." />
 
-              <!-- Replaced table with DeviceTable component -->
-              <DeviceTable v-else-if="devices.length > 0" :devices="devices" :is-deleting="isDeleting"
-                @delete="removeDevice" />
+              <DeviceTable
+                v-else-if="devices.length > 0"
+                :devices="devices"
+                :is-deleting="isDeleting"
+                @delete="removeDevice"
+              />
 
-              <!-- Replaced empty state with EmptyState component -->
-              <EmptyState v-else message="아직 등록된 기기가 없습니다." link-to="/register-device" link-text="새 기기 등록하기" />
+              <EmptyState
+                v-else
+                message="아직 등록된 기기가 없습니다."
+                link-to="/register-device"
+                link-text="새 기기 등록하기"
+              />
 
-              <!-- 메시지 -->
-              <div v-if="message" :class="[
-                'alert mt-3',
-                messageType === 'success' ? 'alert-success' : 'alert-danger',
-              ]">
+              <div
+                v-if="message"
+                :class="[
+                  'alert mt-4',
+                  messageType === 'success' ? 'alert-success' : 'alert-danger',
+                ]"
+                role="alert"
+              >
                 {{ message }}
               </div>
             </div>
@@ -49,7 +61,7 @@ export default {
     return {
       devices: [],
       isLoading: true,
-      isDeleting: {}, // 각 기기 ID별 삭제 로딩 상태
+      isDeleting: {},
       message: '',
       messageType: '',
     }
@@ -63,7 +75,6 @@ export default {
       this.message = ''
       try {
         this.devices = await deviceService.getAllDevices()
-        console.log(this.devices)
       } catch (error) {
         const errorMessage =
           error.response?.data?.message || '기기 목록을 불러오는 데 실패했습니다.'
@@ -73,13 +84,14 @@ export default {
       }
     },
     async removeDevice(macAddr) {
-      if (confirm(`기기 ID: ${macAddr}을(를) 정말로 삭제하시겠습니까?`)) {
+      if (confirm(`MAC 주소: ${macAddr} 기기를 정말로 삭제하시겠습니까?`)) {
+        // this.$set 대신 직접 할당
         this.isDeleting[macAddr] = true
         this.message = ''
         try {
           await deviceService.deleteDevice(macAddr)
-          this.setMessage(`기기 ID: ${macAddr}이(가) 삭제되었습니다.`, 'success')
-          await this.fetchDevices() // 목록 새로고침
+          this.setMessage(`기기(MAC: ${macAddr})가 삭제되었습니다.`, 'success')
+          await this.fetchDevices()
         } catch (error) {
           const errorMessage =
             error.response?.data?.detail ||
@@ -87,10 +99,12 @@ export default {
             '기기 삭제에 실패했습니다.'
           this.setMessage(errorMessage, 'danger')
         } finally {
+          // this.$set 대신 직접 할당
           this.isDeleting[macAddr] = false
         }
       }
     },
+
     setMessage(msg, type) {
       this.message = msg
       this.messageType = type
@@ -104,40 +118,54 @@ export default {
 </script>
 
 <style scoped>
-/* DeviceRegistration과 동일한 보라색 그라데이션 스타일 적용 */
-.registration-container {
+.device-list-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #f0f2f5;
   padding: 2rem 0;
-  animation: slideInUp 0.8s ease-out;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #2d3748;
+}
+
+.page-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+}
+
+.page-subtitle {
+  font-size: 1.1rem;
+  color: #718096;
 }
 
 .card-modern {
   border: none;
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
   overflow: hidden;
 }
 
 .card-body-modern {
-  padding: 3rem;
+  padding: 2.5rem;
 }
 
-.registration-title {
-  color: #333;
-  font-weight: 600;
-  margin-bottom: 2rem;
+.alert {
+  border-radius: 8px;
 }
 
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
+/* 모바일 화면에서 패딩 조정 */
+@media (max-width: 768px) {
+  .device-list-page {
+    padding: 1rem 0;
   }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  .page-title {
+    font-size: 1.8rem;
+  }
+  .card-body-modern {
+    padding: 1rem;
   }
 }
 </style>
