@@ -3,14 +3,16 @@
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-lg-8 text-center">
-          <h2 class="cta-title text-white">민증의 지팡이와 함께하세요</h2>
-          <p class="cta-subtitle text-white-50">더 안전한 환경을 위한 첫 걸음을 내딛어보세요</p>
+          <h2 class="cta-title text-white">민증의 지팡이 통합 관제 시스템</h2>
+          <p class="cta-subtitle text-white-50">
+            지금 바로 상황판을 확인하고 시민의 안전을 지키세요.
+          </p>
           <div class="cta-buttons">
-            <router-link to="/register-device" class="btn btn-light btn-lg me-3">
-              <i class="fas fa-rocket me-2"></i>기기 등록하기
+            <router-link to="/alerts" class="btn btn-light btn-lg me-3">
+              <i class="fas fa-chart-line me-2"></i>대시보드로 이동
             </router-link>
             <router-link to="/device-list" class="btn btn-outline-light btn-lg">
-              <i class="fas fa-list me-2"></i>등록 현황 보기
+              <i class="fas fa-list-alt me-2"></i>등록 기기 현황
             </router-link>
           </div>
         </div>

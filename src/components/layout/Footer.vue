@@ -1,20 +1,20 @@
 <template>
   <footer class="modern-footer">
     <div class="footer-container">
-      <!-- Three-column footer layout with organized sections -->
       <div class="footer-content">
         <div class="footer-section">
-          <h3 class="footer-title">The Cane of Minjeung</h3>
-          <p class="footer-description">범죄 취약 계층을 위한 AI 기반 실시간 대응 서비스</p>
+          <h3 class="footer-title">민증의 지팡이</h3>
+          <p class="footer-description">범죄 취약 계층을 위한 AI 기반 통합 관제 시스템</p>
         </div>
 
         <div class="footer-section">
-          <h4 class="section-title">서비스</h4>
+          <h4 class="section-title">바로가기</h4>
           <ul class="footer-links">
-            <li><router-link to="/register-device" class="footer-link">기기 등록</router-link></li>
-            <li><router-link to="/device-list" class="footer-link">기기 목록</router-link></li>
-            <li><router-link to="/monitoring" class="footer-link">모니터링</router-link></li>
-            <li><router-link to="/alerts" class="footer-link">상황 알림</router-link></li>
+            <li><router-link to="/alerts" class="footer-link">상황 알림 대시보드</router-link></li>
+            <li><router-link to="/device-list" class="footer-link">등록 기기 목록</router-link></li>
+            <li>
+              <router-link to="/register-device" class="footer-link">신규 기기 등록</router-link>
+            </li>
           </ul>
         </div>
 
@@ -27,8 +27,8 @@
             <a href="#" class="social-link" aria-label="Support">🛠️</a>
           </div>
         </div>
-        <div classs="footer-section">
-          <h4 class="Section-title">제작자</h4>
+        <div class="footer-section">
+          <h4 class="section-title">제작자</h4>
           <p class="member">
             김민증 김동준 오태양 <br />
             유진영 이규현 차순욱
@@ -36,9 +36,8 @@
         </div>
       </div>
 
-      <!-- Modern copyright section -->
       <div class="footer-bottom">
-        <p class="copyright">&copy; {{ currentYear }} MinjeungCare. All rights reserved.</p>
+        <p class="copyright">&copy; {{ currentYear }} SENTINEL AI. All rights reserved.</p>
       </div>
     </div>
   </footer>
@@ -57,7 +56,7 @@ export default {
 
 <style scoped>
 .modern-footer {
-  background: var(--muted, #f9fafb);
+  background: var(--muted, #f8f9fa);
   border-top: 1px solid var(--border, #e5e7eb);
   margin-top: auto;
   padding: 3rem 0 1rem;
@@ -85,7 +84,7 @@ export default {
 .footer-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--primary, #0891b2);
+  color: var(--primary, #2b6cb0);
   margin: 0;
 }
 
@@ -118,7 +117,7 @@ export default {
 }
 
 .footer-link:hover {
-  color: var(--primary, #0891b2);
+  color: var(--primary, #2b6cb0);
 }
 
 .project-info {
@@ -148,8 +147,9 @@ export default {
 }
 
 .social-link:hover {
-  background: var(--accent, #6366f1);
-  border-color: var(--accent, #6366f1);
+  background: var(--accent, #4c51bf);
+  border-color: var(--accent, #4c51bf);
+  color: white;
   transform: translateY(-2px);
 }
 
@@ -162,6 +162,11 @@ export default {
 .copyright {
   color: var(--muted-foreground, #4b5563);
   font-size: 0.9rem;
+  margin: 0;
+}
+
+.member {
+  color: var(--muted-foreground, #4b5563);
   margin: 0;
 }
 

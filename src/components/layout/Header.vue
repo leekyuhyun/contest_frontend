@@ -1,34 +1,37 @@
 <template>
   <header class="modern-header">
     <div class="header-container">
-      <!-- Modern logo section with updated branding -->
       <div class="logo-section">
         <router-link to="/" class="logo-link">
           <div class="logo-icon">🛡️</div>
-          <span class="logo-text">The Cane of Minjeung</span>
+          <span class="logo-text">The Cane Of Minjeung</span>
         </router-link>
       </div>
 
-      <!-- Mobile menu toggle button -->
       <button
         class="mobile-menu-toggle"
         @click="toggleMobileMenu"
         :class="{ active: isMobileMenuOpen }"
+        aria-label="메뉴 토글"
       >
         <span></span>
         <span></span>
         <span></span>
       </button>
 
-      <!-- Modern navigation with responsive design -->
       <nav class="main-nav" :class="{ 'mobile-open': isMobileMenuOpen }">
         <ul class="nav-list">
           <li class="nav-item">
             <router-link to="/" class="nav-link" @click="closeMobileMenu">홈</router-link>
           </li>
           <li class="nav-item">
-            <router-link to="/register-device" class="nav-link" @click="closeMobileMenu"
-              >기기 등록</router-link
+            <router-link to="/alerts" class="nav-link" @click="closeMobileMenu"
+              >상황 알림 대시보드</router-link
+            >
+          </li>
+          <li class="nav-item">
+            <router-link to="/history" class="nav-link" @click="closeMobileMenu"
+              >히스토리 조회</router-link
             >
           </li>
           <li class="nav-item">
@@ -37,13 +40,8 @@
             >
           </li>
           <li class="nav-item">
-            <router-link to="/monitoring" class="nav-link" @click="closeMobileMenu"
-              >모니터링</router-link
-            >
-          </li>
-          <li class="nav-item">
-            <router-link to="/alerts" class="nav-link" @click="closeMobileMenu"
-              >상황 알림 대시보드</router-link
+            <router-link to="/register-device" class="nav-link" @click="closeMobileMenu"
+              >신규 기기 등록</router-link
             >
           </li>
         </ul>
@@ -101,7 +99,7 @@ export default {
   display: flex;
   align-items: center;
   text-decoration: none;
-  color: var(--foreground, #4b5563);
+  color: var(--foreground, #2d3748);
   font-weight: 700;
   font-size: 1.25rem;
   gap: 0.5rem;
@@ -112,7 +110,8 @@ export default {
 }
 
 .logo-text {
-  color: var(--primary, #0891b2);
+  color: var(--primary, #2b6cb0);
+  letter-spacing: 0.5px;
 }
 
 .mobile-menu-toggle {
@@ -170,11 +169,11 @@ export default {
 }
 
 .nav-link:hover {
-  color: var(--primary, #0891b2);
+  color: var(--primary, #2b6cb0);
 }
 
 .nav-link.router-link-active {
-  color: var(--primary, #0891b2);
+  color: var(--primary, #2b6cb0);
   font-weight: 600;
 }
 
@@ -185,12 +184,7 @@ export default {
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--primary, #0891b2);
-}
-
-.user-section {
-  display: flex;
-  align-items: center;
+  background: var(--primary, #2b6cb0);
 }
 
 @media (max-width: 768px) {

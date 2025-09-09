@@ -3,8 +3,8 @@
     <div class="container">
       <div class="row justify-content-center mb-5">
         <div class="col-lg-8 text-center">
-          <h2 class="section-title">핵심 기능</h2>
-          <p class="section-subtitle">첨단 기술로 구현하는 스마트 안전 솔루션</p>
+          <h2 class="section-title">주요 기능</h2>
+          <p class="section-subtitle">첨단 기술로 신속하고 정확한 대응을 지원합니다.</p>
         </div>
       </div>
       <div class="row g-4">
@@ -34,22 +34,23 @@ export default {
     return {
       features: [
         {
-          icon: 'fas fa-video text-success',
-          title: '실시간 모니터링',
-          description: '24시간 끊임없는 감시로 위험 상황을 즉시 포착합니다.',
-          items: ['하드웨어 연동', '실시간 모니터링', '이상 징후 감지'],
+          icon: 'fas fa-satellite-dish text-success',
+          title: '실시간 관제',
+          description: '등록된 기기로부터 24시간 데이터를 수신하여 위험 징후를 즉시 포착합니다.',
+          items: ['위치 정보 수집', '음성 데이터 분석', '이상 패턴 감지'],
         },
         {
           icon: 'fas fa-brain text-info',
-          title: 'AI 기반 분석',
-          description: '인공지능이 복잡한 상황을 정확하게 판단합니다.',
-          items: ['STT', 'LLM', '위험도 평가'],
+          title: 'AI 기반 상황 분석',
+          description: '인공지능이 데이터를 종합 분석하여 상황의 위험도를 정확하게 판단합니다.',
+          items: ['음성 텍스트 변환(STT)', '상황 판단(LLM)', '위험도 등급 분류'],
         },
         {
-          icon: 'fas fa-bolt text-danger',
-          title: '신속한 대응',
-          description: '위험 감지 시 관계 기관과 보호자에게 알림을 전송합니다.',
-          items: ['보호자 알림', '초동 대응 지원'],
+          icon: 'fas fa-siren-on text-danger',
+          title: '관계기관 대응',
+          description:
+            '위험 상황 발생 시 담당자와 관계기관에 통보하여 신속한 초동 대응을 지원합니다.',
+          items: ['상황 전파', '보호자 알림', '초동 대응 지원'],
         },
       ],
     }

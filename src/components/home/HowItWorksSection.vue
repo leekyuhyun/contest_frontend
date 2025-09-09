@@ -3,8 +3,8 @@
     <div class="container">
       <div class="row justify-content-center mb-5">
         <div class="col-lg-8 text-center">
-          <h2 class="section-title">작동 원리</h2>
-          <p class="section-subtitle">3단계로 이루어지는 스마트 안전 시스템</p>
+          <h2 class="section-title">대응 프로세스</h2>
+          <p class="section-subtitle">3단계로 이루어지는 신속·정확한 대응 시스템</p>
         </div>
       </div>
       <div class="row">
@@ -33,19 +33,22 @@ export default {
     return {
       steps: [
         {
-          icon: 'fas fa-search',
-          title: '감지',
-          description: '스마트 감지 장치로 상황이 발생하면 센서 데이터를 서버로 전송합니다.',
+          icon: 'fas fa-search-location',
+          title: '상황 감지',
+          description:
+            '등록된 스마트 기기에서 위험 징후 발생 시, 관련 센서 데이터를 즉시 서버로 전송합니다.',
         },
         {
           icon: 'fas fa-cogs',
-          title: '분석',
-          description: 'AI가 수집된 데이터를 분석하여 위험 상황을 판단합니다.',
+          title: '상황 분석',
+          description:
+            '수집된 데이터를 AI가 종합적으로 분석하여 위험 상황 여부와 등급을 판단합니다.',
         },
         {
-          icon: 'fas fa-phone',
-          title: '대응',
-          description: '위험 감지 시 관계 기관과 보호자에게 알림을 전송합니다.',
+          icon: 'fas fa-phone-volume',
+          title: '상황 전파 및 대응',
+          description:
+            '분석 결과를 바탕으로 즉시 관계 기관 및 담당자에게 상황을 전파하고 초동 대응을 지원합니다.',
         },
       ],
     }
@@ -67,7 +70,7 @@ export default {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
   color: white;
   display: flex;
   align-items: center;
@@ -79,7 +82,7 @@ export default {
 
 .step-icon {
   font-size: 3rem;
-  color: #667eea;
+  color: #4a5568;
   margin-bottom: 1.5rem;
 }
 
@@ -101,7 +104,7 @@ export default {
   right: -2rem;
   transform: translateY(-50%);
   font-size: 2rem;
-  color: #667eea;
+  color: #4a5568;
 }
 
 /* Responsive */
