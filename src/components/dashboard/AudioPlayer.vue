@@ -1,68 +1,104 @@
 <template>
-  <div class="audio-container">
-    <div class="audio-header">
-      <h4 class="h6 mb-0">
-        <i class="fas fa-microphone me-2"></i>
-        녹음 파일
-      </h4>
+  <div class="audio-player-card">
+    <div class="panel-header">
+      <i class="fas fa-microphone-alt icon"></i>
+      <h3 class="title">실시간 음성 분석</h3>
     </div>
-
-    <div class="audio-content">
-      <div class="audio-player">
-        <audio controls class="w-100">
-          <source src="" type="audio/mpeg" />
-          브라우저가 오디오를 지원하지 않습니다.
-        </audio>
-      </div>
-
-      <div class="audio-info">
-        <small class="text-muted">
-          <i class="fas fa-clock me-1"></i>
-          녹음 시간: {{ emergencyTime }}
-        </small>
+    <div class="panel-body">
+      <div class="stt-transcript-wrapper">
+        <div class="stt-transcript" ref="transcriptBox">
+          <p v-for="(item, index) in stt_data" :key="index" class="stt-item">
+            <span class="timestamp">{{ formatTime(item.timestamp) }}</span>
+            <span class="text">{{ item.text }}</span>
+          </p>
+          <p v-if="stt_data.length === 0" class="no-data">음성 데이터 수신 대기 중...</p>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { ref, watch, nextTick } from 'vue'
 export default {
   name: 'AudioPlayer',
-  props: {
-    emergencyTime: {
-      type: String,
-      required: true,
-    },
+  props: { stt_data: { type: Array, default: () => [] } },
+  setup(props) {
+    const transcriptBox = ref(null)
+    watch(
+      () => props.stt_data,
+      () => {
+        nextTick(() => {
+          if (transcriptBox.value) {
+            transcriptBox.value.scrollTop = transcriptBox.value.scrollHeight
+          }
+        })
+      },
+      { deep: true }
+    )
+
+    const formatTime = ts => new Date(ts).toLocaleTimeString('ko-KR')
+
+    return { transcriptBox, formatTime }
   },
 }
 </script>
 
 <style scoped>
-.audio-container {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  flex: 1;
+.audio-player-card {
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
-
-.audio-header {
-  background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-  color: white;
-  padding: 15px 20px;
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #f1f5f9;
 }
-
-.audio-content {
-  padding: 20px;
-  flex: 1;
+.icon {
+  font-size: 1.5rem;
+  color: #48bb78;
+}
+.title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+  color: #1e293b;
+}
+.panel-body {
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  min-height: 0;
 }
-
-.audio-player audio {
-  border-radius: 10px;
+.stt-transcript-wrapper {
+  flex-grow: 1;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-y: auto;
+  border: 1px solid #f1f5f9;
+}
+.stt-item {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.timestamp {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-family: monospace;
+}
+.text {
+  font-size: 0.9rem;
+  color: #334155;
+}
+.no-data {
+  text-align: center;
+  color: #94a3b8;
 }
 </style>

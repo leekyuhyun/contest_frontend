@@ -1,223 +1,276 @@
 <template>
-  <div class="emergency-dashboard">
-    <div class="dashboard-content">
-      <!-- Split device info into separate component -->
-      <DeviceInfoCard :loading="loadingDeviceInfo" :deviceInfo="deviceInfo" :errorMessage="errorMessage"
-        @endSituation="endSituation" />
-      <TimelineSlider :data="sortedData" @select="handleSelect" @select-live="handleSelectLive" />
-      <MonitoringMap v-if="selectedData" :data="selectedData"></MonitoringMap>
-      <!-- <div v-if="loadingWs" class="text-center py-4">
-        이건 모른다잉
-      </div>
-      <div v-else-if="sortedData.length === 0">
-        아직 뭐 없다잉
-      </div>
-      <div v-else>
-        지금은 뭐 있다잉
-      </div>
-      <div class="map-audio-section">
-        <ul>
-          <li v-for="item in sortedData" :key="item.created_at">
-            <strong>{{ formatDateTime(item.created_at) }}</strong>
-            <br>
-            위치: {{ item.lat }}, {{ item.lng }}
-            <br>
-            <audio v-if="item.audio_obj_key" :src="item.audio_obj_key" controls></audio>
-          </li>
-        </ul>
-      </div> -->
+  <div class="dashboard-page">
+    <div class="panel top-panel mb-4">
+      <DeviceInfoCard v-if="deviceInfo" :device="deviceInfo" />
+      <div v-else class="panel-placeholder">기기 정보 로딩 중...</div>
+    </div>
+
+    <div class="main-grid">
+      <main class="panel map-panel">
+        <MonitoringMap :gps-data="sortedData" />
+        <div v-if="loadingWs" class="map-loading-overlay">
+          <div class="spinner-border text-light" role="status"></div>
+          <p>데이터 수신 중...</p>
+        </div>
+      </main>
+
+      <aside class="panel log-panel">
+        <div class="panel-header">
+          <i class="fas fa-history icon"></i>
+          <h3 class="title">실시간 로그</h3>
+        </div>
+        <div class="panel-body">
+          <div v-if="loadingWs" class="log-state">
+            <span>최초 데이터 수신 중입니다...</span>
+          </div>
+          <div v-else-if="sortedData.length === 0" class="log-state">
+            <span>수신된 데이터가 없습니다.</span>
+          </div>
+          <ul v-else class="log-list">
+            <li v-for="item in sortedData" :key="item.created_at" class="log-item">
+              <div class="log-timestamp">
+                <i class="fas fa-clock"></i>
+                {{ formatDateTime(item.created_at) }}
+              </div>
+              <div class="log-content">
+                <div class="log-detail" v-if="item.lat && item.lat !== 'N/A'">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <span>위치: {{ item.lat }}, {{ item.lng }}</span>
+                </div>
+                <audio
+                  v-if="item.audio_obj_key"
+                  :src="item.audio_obj_key"
+                  controls
+                  class="log-audio"
+                ></audio>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </aside>
     </div>
   </div>
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted, computed } from 'vue'
-import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
-import deviceService from '../services/deviceService.js'
-import DeviceInfoCard from '../components/dashboard/DeviceInfoCard.vue'
-import TimelineSlider from '@/components/dashboard/TimelineSlider.vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRoute, onBeforeRouteLeave } from 'vue-router'
 import MonitoringMap from '@/components/dashboard/MonitoringMap.vue'
+import DeviceInfoCard from '@/components/dashboard/DeviceInfoCard.vue'
 
 export default {
   name: 'Dashboard',
   components: {
-    DeviceInfoCard,
-    TimelineSlider,
     MonitoringMap,
-  },
-  props: {
-    macAddress: {
-      type: String,
-      required: true,
-    },
-  },
-  methods: {
-    formatDateTime(dateTimeString) {
-      if (!dateTimeString) return '-'
-      return new Date(dateTimeString).toLocaleString('ko-KR')
-    },
+    DeviceInfoCard,
   },
   setup() {
     const route = useRoute()
-    const router = useRouter()
-
-    const loadingDeviceInfo = ref(true)
-    const deviceInfo = ref(null)
-    const macAddress = ref(route.params.macAddress || '')
-    const errorMessage = ref('')
+    const macAddress = route.params.macAddress
 
     const loadingWs = ref(true)
-    const streamData = ref([])
+    const situationData = ref([])
+    const deviceInfo = ref(null)
     const ws = ref(null)
 
     const connectWebSocket = () => {
-      ws.value = new WebSocket(`ws://${import.meta.env.VITE_API_URL || '127.0.0.1:8000'}/ws/dashboard/${macAddress.value}`)
+      ws.value = new WebSocket(
+        `ws://${import.meta.env.VITE_API_URL || '127.0.0.1:8000'}/ws/situation/${macAddress}`
+      )
 
-      ws.value.onopen = () => {
-        console.log('WebSocket connected')
-      }
+      ws.value.onopen = () => console.log(`WebSocket connected for ${macAddress}`)
 
-      ws.value.onmessage = (event) => {
+      ws.value.onmessage = event => {
         const data = JSON.parse(event.data)
-        loadingWs.value = false;
-        console.log(data)
+        loadingWs.value = false
+
         if (data.initial) {
-          streamData.value = data.data
+          deviceInfo.value = data.data.device
+          situationData.value = data.data.gps_data.map(gps => ({
+            ...gps,
+            lat: gps.latitude,
+            lng: gps.longitude,
+          }))
+          data.data.stt_data.forEach(stt => {
+            situationData.value.push({ ...stt, created_at: stt.timestamp, lat: 'N/A', lng: 'N/A' })
+          })
         } else {
-          console.log(data.data[0])
-          streamData.value.push(data.data[0])
+          const { gps, stt } = data.data
+          if (gps) {
+            situationData.value.push({ ...gps, lat: gps.latitude, lng: gps.longitude })
+          }
+          if (stt) {
+            situationData.value.push({ ...stt, created_at: stt.timestamp, lat: 'N/A', lng: 'N/A' })
+          }
         }
       }
-
-      ws.value.onclose = () => {
-        console.log('WebSocket disconnected, reconnecting in 10s...')
-        setTimeout(connectWebSocket, 10000)
-      }
-
-      ws.value.onerror = (err) => {
-        console.error('WebSocket error:', err)
+      ws.value.onclose = () => console.log('WebSocket disconnected')
+      ws.value.onerror = error => {
+        console.error('WebSocket error:', error)
         ws.value.close()
       }
     }
 
     const disconnectWebSocket = () => {
-      if (ws.value) {
-        ws.value.close()
-      }
-    }
-
-    const fetchDeviceInfo = async () => {
-      try {
-        loadingDeviceInfo.value = true
-        errorMessage.value = ''
-
-        if (!macAddress.value) {
-          console.error('MAC 주소가 제공되지 않았습니다.')
-          errorMessage.value = 'MAC 주소가 제공되지 않았습니다.'
-          return
-        }
-
-        const response = await deviceService.getDeviceByMac(macAddress.value)
-
-        deviceInfo.value = response
-
-      } catch (error) {
-        deviceInfo.value = null
-        errorMessage.value = error.message || '기기 정보를 불러오는 중 오류가 발생했습니다.'
-      } finally {
-        loadingDeviceInfo.value = false
-      }
-    }
-
-    const endSituation = () => {
-      if (confirm('응급 상황을 종료하시겠습니까?')) {
-        alert('응급 상황이 종료되었습니다.')
-        router.push('/device-list')
-      }
+      if (ws.value) ws.value.close()
     }
 
     const sortedData = computed(() => {
-      return [...streamData.value].sort((a, b) => new Date(new Date(a.created_at).getTime() - new Date(b.created_at).getTime()))
-    })
-
-    const selected = ref(0)
-
-    const handleSelect = (select) => {
-      selected.value = select;
-    }
-
-    const selectedData = computed(() => {
-      return streamData.value.find(
-        item => new Date(item.created_at).getTime() === selected.value
+      return [...situationData.value].sort(
+        (a, b) => new Date(b.created_at) - new Date(a.created_at)
       )
     })
 
-    const selectedLive = ref(true)
-
-    const handleSelectLive = (select) => {
-      selected.value = select;
+    const formatDateTime = timestamp => {
+      if (!timestamp) return ''
+      return new Date(timestamp).toLocaleString('ko-KR')
     }
 
-    onMounted(() => {
-      fetchDeviceInfo()
-      connectWebSocket()
-    })
-
-    onUnmounted(() => {
-      disconnectWebSocket()
-    })
-
-    onBeforeRouteLeave(() => {
-      disconnectWebSocket()
-    })
+    onMounted(connectWebSocket)
+    onUnmounted(disconnectWebSocket)
+    onBeforeRouteLeave(disconnectWebSocket)
 
     return {
-      loadingDeviceInfo,
-      deviceInfo,
-      macAddress,
-      errorMessage,
-      endSituation,
       loadingWs,
       sortedData,
-      selected,
-      selectedData,
-      handleSelect,
-      handleSelectLive,
+      deviceInfo,
+      formatDateTime,
     }
   },
 }
 </script>
 
 <style scoped>
-.emergency-dashboard {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-  padding: 20px;
-}
-
-.dashboard-content {
+.dashboard-page {
+  background-color: #f0f2f5;
+  min-height: calc(100vh - 64px);
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 30px;
-  height: calc(100vh - 60px);
-  max-height: calc(100vh - 60px);
 }
 
-.map-audio-section {
-  display: flex;
-  gap: 20px;
-  flex: 1;
+.panel {
+  background-color: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.top-panel {
+  flex-shrink: 0;
+}
+
+.main-grid {
+  display: grid;
+  grid-template-columns: 7fr 3fr; /* 지도와 로그 비율 */
+  gap: 1.5rem;
+  flex-grow: 1;
   min-height: 0;
 }
 
-@media (max-width: 768px) {
-  .dashboard-content {
-    gap: 20px;
-    height: calc(100vh - 40px);
-  }
+.map-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
 
-  .map-audio-section {
-    flex-direction: column;
+.log-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.map-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+/* 오른쪽 로그 패널 스타일 */
+.panel-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+.panel-header .icon {
+  font-size: 1.2rem;
+  color: #a855f7;
+}
+.panel-header .title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  color: #1e293b;
+}
+
+.panel-body {
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+.log-state {
+  text-align: center;
+  color: #94a3b8;
+  padding: 2rem;
+}
+.log-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.log-item {
+  padding: 1rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+.log-item:last-child {
+  border-bottom: none;
+}
+.log-timestamp {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #475569;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.log-content .log-detail {
+  font-size: 0.9rem;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.log-audio {
+  width: 100%;
+  margin-top: 0.75rem;
+  height: 40px;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 992px) {
+  .dashboard-page {
+    padding: 1rem;
+  }
+  .main-grid {
+    grid-template-columns: 1fr; /* 세로로 쌓이도록 변경 */
+  }
+  .map-panel {
+    min-height: 400px; /* 모바일에서 최소 높이 보장 */
+  }
+  .log-panel {
+    min-height: 300px;
   }
 }
 </style>

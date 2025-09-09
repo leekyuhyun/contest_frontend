@@ -1,52 +1,29 @@
 <template>
-  <div class="device-info-section">
-    <div class="info-card">
-      <div class="card-header">
-        <div class="header-flex">
-          <h3 class="h5 mb-0">
-            <i class="fas fa-user-shield me-2"></i>
-            기기 정보
-          </h3>
-          <button class="btn btn-danger btn-sm end-situation-btn" @click="$emit('endSituation')" :disabled="loading">
-            <i class="fas fa-stop-circle me-2"></i>
-            상황 종료
-          </button>
-        </div>
+  <div class="device-info-card">
+    <div class="panel-header">
+      <i class="fas fa-user-circle icon"></i>
+      <h3 class="title">사용자 정보</h3>
+    </div>
+    <div class="panel-body">
+      <div class="info-item">
+        <span class="label">이름</span>
+        <span class="value">{{ device.name }}</span>
       </div>
-
-      <div class="card-body">
-        <div v-if="loading" class="text-center py-4">
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">로딩 중...</span>
-          </div>
-          <p class="mt-2">기기 정보를 불러오는 중...</p>
-        </div>
-
-        <div v-else-if="deviceInfo" class="device-details">
-          <div class="info-row">
-            <span class="label">이름:</span>
-            <span class="value">{{ deviceInfo.name }}</span>
-          </div>
-          <div class="info-row">
-            <span class="label">연락처:</span>
-            <span class="value">{{ deviceInfo.phone }}</span>
-          </div>
-          <div class="info-row">
-            <span class="label">보호자 이름:</span>
-            <span class="value">{{ deviceInfo.guardian_name }}</span>
-          </div>
-          <div class="info-row">
-            <span class="label">보호자 연락처:</span>
-            <span class="value">{{ deviceInfo.guardian_phone }}</span>
-          </div>
-
-        </div>
-
-        <div v-else class="alert alert-warning">
-          <i class="fas fa-exclamation-triangle me-2"></i>
-          <div v-if="errorMessage">{{ errorMessage }}</div>
-          <div v-else>기기 정보를 불러올 수 없습니다.</div>
-        </div>
+      <div class="info-item">
+        <span class="label">MAC 주소</span>
+        <span class="value monospace">{{ device.mac_address }}</span>
+      </div>
+      <div class="info-item">
+        <span class="label">연락처</span>
+        <span class="value">{{ device.phone }}</span>
+      </div>
+      <div class="info-item">
+        <span class="label">보호자</span>
+        <span class="value">{{ device.guardian_name }} ({{ device.guardian_relation }})</span>
+      </div>
+      <div class="info-item">
+        <span class="label">보호자 연락처</span>
+        <span class="value">{{ device.guardian_phone }}</span>
       </div>
     </div>
   </div>
@@ -55,127 +32,50 @@
 <script>
 export default {
   name: 'DeviceInfoCard',
-  props: {
-    loading: {
-      type: Boolean,
-      default: false,
-    },
-    deviceInfo: {
-      type: Object,
-      default: null,
-    },
-    errorMessage: {
-      type: String,
-      default: '',
-    },
-  },
-  emits: ['endSituation'],
+  props: { device: { type: Object, required: true } },
 }
 </script>
 
 <style scoped>
-.header-flex {
+.panel-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.icon {
+  font-size: 1.2rem;
+  color: #4299e1;
+}
+.title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  color: #1e293b;
+}
+.panel-body {
+  padding: 1.25rem;
+}
+.info-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-}
-
-.end-situation-btn {
-  padding: 8px 20px;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 0.875rem;
-  box-shadow: 0 3px 10px rgba(220, 53, 69, 0.3);
-  transition: all 0.3s ease;
-}
-
-.end-situation-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
-}
-
-.info-card {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-
-.card-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 20px 30px;
-}
-
-.card-body {
-  padding: 30px;
-}
-
-.device-details {
-  display: grid;
-  grid-template-columns: 1fr 2fr 1fr 2fr;
-  gap: 1rem;
-}
-
-.info-row {
-  display: flex;
-  /* justify-content: space-between; */
-  align-items: center;
-  padding: 15px 25px;
-  background: #f8f9fa;
-  border-radius: 10px;
-  border: 1px solid #e9ecef;
-  white-space: nowrap;
-  min-width: 0;
-}
-
-.label {
-  font-weight: 600;
-  color: #555;
-  min-width: 80px;
-  flex-shrink: 0;
+  padding: 0.6rem 0;
   font-size: 0.9rem;
+  border-bottom: 1px solid #f8fafc;
 }
-
+.info-item:last-child {
+  border-bottom: none;
+}
+.label {
+  color: #64748b;
+}
 .value {
   font-weight: 500;
-  color: #2c3e50;
+  color: #334155;
   text-align: right;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex: 1;
-  min-width: 0;
 }
-
-.emergency-time {
-  color: #e74c3c !important;
-  font-weight: 700;
-}
-
-.location-address {
-  color: #2980b9 !important;
-  font-weight: 700;
-}
-
-@media (max-width: 768px) {
-  .header-flex {
-    flex-direction: column;
-    gap: 10px;
-    align-items: flex-start;
-  }
-
-  .device-details {
-    grid-template-columns: 1fr;
-  }
-
-  .info-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-  }
-
-  .value {
-    text-align: left;
-  }
+.monospace {
+  font-family: monospace;
 }
 </style>

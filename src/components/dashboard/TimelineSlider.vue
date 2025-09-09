@@ -1,146 +1,60 @@
 <template>
-    <div class="timeline-slider">
-        <h3 class="font-semibold mb-2">시간대 선택</h3>
-        <Slider v-if="timestamps.length > 0" v-model="selected" :min="0" :max="timestamps.length - 1" :marks="marks"
-            :tooltips="true" :format="formatTimeFromIndex" :lazy="false" @change="handleChange"
-            tooltipPosition="bottom" />
-        <div v-if="timestamps.length > 0" class="d-flex justify-content-between mt-5 w-full fw-semibold">
-            <span>{{ formatTimeFromIndex(selected) }}</span>
-            <span class="toggle-switch">
-                <span>{{ wantLive ? '실시간 조회' : '수동 조회' }}</span>
-                <label class="switch justify-content-center align-items-center">
-                    <input type="checkbox" v-model="wantLive" />
-                    <span class="slider"></span>
-                </label>
-            </span>
-        </div>
+  <div class="timeline-card">
+    <div class="panel-header">
+      <i class="fas fa-history icon"></i>
+      <h3 class="title">상황 타임라인</h3>
     </div>
+    <div class="panel-body">
+      <div class="timeline-placeholder">
+        <p>타임라인 슬라이더 기능 구현 영역</p>
+        <span>GPS 데이터 {{ gpsData.length }}개 수신</span>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import { computed, ref, watch } from 'vue';
-import Slider from '@vueform/slider';
-
 export default {
-    name: 'TimelineSlider',
-    props: {
-        data: {
-            type: Array,
-            required: true,
-        },
-    },
-    emits: ["select", "select-live"],
-    components: { Slider },
-    setup(props, { emit }) {
-        const timestamps = computed(() => {
-            return props.data
-                .map(item => new Date(item.created_at).getTime())
-                .sort((a, b) => a - b)
-        })
-
-        const marks = computed(() => {
-            return timestamps.value.reduce((acc, ts, index) => {
-                const utcDate = new Date(ts)
-                const kstDate = new Date(utcDate.getTime() + 9 * 60 * 60 * 1000)
-                acc[index] = new Date(kstDate).toLocaleTimeString('ko-KR', {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                })
-                return acc
-            }, {})
-        })
-
-        const selected = ref(0)
-        watch(timestamps, (newVal) => {
-            if (newVal.length > 0) {
-                selected.value = newVal.length - 1
-                emit("select", timestamps.value[selected.value])
-            }
-        })
-
-        const formatTimeFromIndex = (index) => {
-            const ts = timestamps.value[index]
-            if (!ts) return "-"
-            const utcDate = new Date(ts)
-            const kstDate = new Date(utcDate.getTime() + 9 * 60 * 60 * 1000)
-            return new Date(kstDate).toLocaleTimeString('ko-KR', {
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit"
-            })
-        }
-
-        const handleChange = (val) => {
-            emit("select", timestamps.value[val])
-        }
-
-        const wantLive = ref(true)
-
-        return {
-            timestamps,
-            marks,
-            selected,
-            formatTimeFromIndex,
-            handleChange,
-            wantLive,
-        }
-    },
+  name: 'TimelineSlider',
+  props: { gpsData: { type: Array, default: () => [] } },
 }
 </script>
 
-<style src="@vueform/slider/themes/default.css"></style>
 <style scoped>
-.timeline-slider {
-    padding: 4rem;
-    border-radius: 12px;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
+.timeline-card {
+  padding: 1.5rem;
 }
-
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 4.5rem;
-    height: 2rem;
-    margin-left: 0.5rem;
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #f1f5f9;
 }
-
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
+.icon {
+  font-size: 1.5rem;
+  color: #a855f7;
 }
-
-.slider {
-    position: absolute;
-    cursor: pointer;
-    background-color: #ccc;
-    border-radius: 1.0rem;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    transition: 0.3s;
+.title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+  color: #1e293b;
 }
-
-.slider:before {
-    content: "";
-    position: absolute;
-    height: 1.8rem;
-    width: 1.8rem;
-    left: 0.2rem;
-    bottom: 0.1rem;
-    background-color: white;
-    border-radius: 70%;
-    transition: 0.3s;
+.timeline-placeholder {
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8fafc;
+  color: #a0aec0;
+  border-radius: 8px;
+  text-align: center;
 }
-
-input:checked+.slider {
-    background-color: #4ade80;
-    /* green */
-}
-
-input:checked+.slider:before {
-    transform: translateX(2.35rem);
+.timeline-placeholder span {
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
 }
 </style>
