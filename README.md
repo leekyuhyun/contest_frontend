@@ -4,9 +4,9 @@
 
 ### VSCode Extension
 
-- **Prettier**
-- **ESLint**
-- **Vue-Official**
+- Prettier
+- ESLint
+- Vue-Official
 
 ### Repository Clone (Frontend)
 
