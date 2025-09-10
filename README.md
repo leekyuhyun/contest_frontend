@@ -1,6 +1,6 @@
 # Frontend
 
-## Setup
+## Project Setup
 
 ### VSCode Extension
 
