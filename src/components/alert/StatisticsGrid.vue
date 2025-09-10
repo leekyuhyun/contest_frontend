@@ -3,7 +3,7 @@
     <div class="stat-card">
       <div class="stat-icon total"><i class="fas fa-bullhorn"></i></div>
       <div class="stat-content">
-        <p class="stat-label">총 활성 상황</p>
+        <p class="stat-label">총 발생 상황</p>
         <p class="stat-value">{{ total }}</p>
       </div>
     </div>
