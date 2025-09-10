@@ -27,6 +27,12 @@
         >
           상세/수정
         </router-link>
+        <router-link
+          :to="{ name: 'history', params: { macAddress: device.mac_address } }"
+          class="btn btn-sm btn-outline-info"
+        >
+          히스토리
+        </router-link>
         <button class="btn btn-sm btn-outline-danger" @click="handleDelete" :disabled="isDeleting">
           <span
             v-if="isDeleting"
@@ -42,7 +48,6 @@
 </template>
 
 <script>
-// ... 기존 스크립트 내용은 그대로 유지 ...
 export default {
   name: 'DeviceTableRow',
   props: {
@@ -69,6 +74,7 @@ export default {
 </script>
 
 <style scoped>
+/* 기존 스타일은 그대로 유지 */
 td {
   white-space: nowrap;
 }
@@ -100,6 +106,11 @@ td {
 .btn-group .btn {
   padding: 0.25rem 0.6rem;
   font-size: 0.8rem;
+}
+
+/* ✨ 버튼 간 간격 추가 ✨ */
+.btn-group .btn + .btn {
+  margin-left: 0.25rem;
 }
 
 /* 모바일 화면에서 badge와 code의 정렬을 맞추기 위한 스타일 */
