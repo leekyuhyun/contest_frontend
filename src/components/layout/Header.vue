@@ -30,11 +30,6 @@
             >
           </li>
           <li class="nav-item">
-            <router-link to="/history" class="nav-link" @click="closeMobileMenu"
-              >히스토리 조회</router-link
-            >
-          </li>
-          <li class="nav-item">
             <router-link to="/device-list" class="nav-link" @click="closeMobileMenu"
               >등록 기기 목록</router-link
             >
