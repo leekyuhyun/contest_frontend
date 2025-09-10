@@ -3,9 +3,9 @@ import HomeView from '../views/HomeView.vue'
 import DeviceRegistration from '@/views/DeviceRegistration.vue'
 import DeviceListView from '@/views/DeviceListView.vue'
 import DeviceDetailView from '../views/DeviceDetailView.vue'
-import Monitoring from '@/views/Monitoring.vue'
 import Dashboard from '@/views/Dashboard.vue'
 import SituationAlertDashboard from '@/views/SituationAlertDashboard.vue'
+import HistoryView from '@/views/HistoryView.vue'
 
 const routes = [
   {
@@ -34,12 +34,6 @@ const routes = [
   },
 
   {
-    path: '/monitoring',
-    name: 'monitoring',
-    component: Monitoring,
-  },
-
-  {
     path: '/dashboard/:macAddress',
     name: 'dashboard',
     component: Dashboard,
@@ -50,6 +44,12 @@ const routes = [
     path: '/alerts',
     name: 'situation-alerts',
     component: SituationAlertDashboard,
+  },
+
+  {
+    path: '/history',
+    name: 'history',
+    component: HistoryView,
   },
 ]
 
